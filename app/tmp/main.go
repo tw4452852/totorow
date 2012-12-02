@@ -32,6 +32,7 @@ func main() {
 				},
 				RenderArgNames: map[int][]string{ 
 					10: []string{ 
+						"name",
 					},
 				},
 			},
