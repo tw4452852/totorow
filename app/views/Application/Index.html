@@ -1,7 +1,14 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
-<h1>Your Application Is Ready</h1>
+<h1>Tw's blog</h1>
+<ul class="post">
+	{{with .records}}
+		{{range .}}
+		<li><span>{{.Date}}</span> &raquo; <a href={{.Name}}>{{.Name}}</a></li>
+		{{end}}
+	{{end}}
+</ul>
 
 {{template "footer.html" .}}
 
