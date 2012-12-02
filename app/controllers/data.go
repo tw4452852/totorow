@@ -23,6 +23,7 @@ func (d DataPlugin) OnAppStart() {
 	//assue data dir is in ../
 	const topDir = "./data/"
 	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
+		rev.INFO.Println(path)
 		if path == topDir {
 			return nil
 		}
