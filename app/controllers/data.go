@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/robfig/revel"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -35,6 +36,8 @@ func (d DataPlugin) OnAppStart() {
 	}); err != nil {
 		rev.ERROR.Printf("walk %q failed: %s\n", topDir, err)
 	}
+	o, _ := exec.Command("pwd").CombinedOutput()
+	records = append(records, &Record{time.Now().String(), string(o)})
 }
 
 func init() {
