@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"bytes"
 	"github.com/robfig/revel"
 	"github.com/russross/blackfriday"
+	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,8 +13,8 @@ import (
 )
 
 type Article struct {
-	Title string
-	Data  string
+	Name string
+	Data string
 }
 
 //articles db
@@ -28,7 +30,11 @@ func (a articleDB) init(topDir string) error {
 		if err != nil {
 			return err
 		}
-		a[post.Name] = &Article{TrimSuffix(post.Name), data}
+		buffer := &bytes.Buffer{}
+		t := template.New("data")
+		t = template.Must(t.Parse(data))
+		t.Execute(buffer, nil)
+		a[post.Name] = &Article{TrimSuffix(post.Name), buffer.String()}
 	}
 	return nil
 }
@@ -38,7 +44,8 @@ func generateHTML(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(blackfriday.MarkdownCommon(data)), err
+	html := blackfriday.MarkdownCommon(data)
+	return string(html), err
 }
 
 type Post struct {
