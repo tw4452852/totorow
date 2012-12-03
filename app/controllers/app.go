@@ -7,5 +7,5 @@ type Application struct {
 }
 
 func (c Application) Index() rev.Result {
-	return c.Render()
+	return c.Render(records)
 }
