@@ -7,31 +7,31 @@ import (
 	"time"
 )
 
-type Record struct {
+type Post struct {
 	Date string
 	Name string
 }
 
 //file infos db
-var records []*Record
+var posts []*Post
 
-type DataPlugin struct {
+type PostPlugin struct {
 	rev.EmptyPlugin
 }
 
-func (d DataPlugin) OnAppStart() {
+func (d PostPlugin) OnAppStart() {
 	//assue data dir is in ../
 	gopath := os.Getenv("GOPATH")
-	topDir := gopath + "/src/totorow/app/data/"
+	topDir := gopath + "/src/totorow/app/posts/"
 	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
-		rev.ERROR.Println(path)
 		if path == topDir {
 			return nil
 		}
 		if info.IsDir() {
 			return filepath.SkipDir
 		}
-		records = append(records, &Record{info.ModTime().Format(time.ANSIC), info.Name()})
+		rev.INFO.Printf("walk %q\n", path)
+		posts = append(posts, &Post{info.ModTime().Format(time.ANSIC), info.Name()})
 		return nil
 	}); err != nil {
 		rev.ERROR.Printf("walk %q failed: %s\n", topDir, err)
@@ -39,5 +39,5 @@ func (d DataPlugin) OnAppStart() {
 }
 
 func init() {
-	rev.RegisterPlugin(DataPlugin{})
+	rev.RegisterPlugin(PostPlugin{})
 }

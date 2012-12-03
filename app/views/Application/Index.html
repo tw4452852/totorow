@@ -9,7 +9,7 @@
 
 	<div id="post">
 	<ul class="posts">
-		{{with .records}}
+		{{with .posts}}
 			{{range .}}
 			<li><span>{{.Date}}</span> &raquo; <a href={{.Name}}>{{.Name}}</a></li>
 			{{end}}
