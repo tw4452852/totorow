@@ -21,7 +21,8 @@ type DataPlugin struct {
 
 func (d DataPlugin) OnAppStart() {
 	//assue data dir is in ../
-	const topDir = "./data/"
+	gopath := os.Getenv("GOPATH")
+	topDir := gopath + "/src/totorow/app/data/"
 	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
 		rev.ERROR.Println(path)
 		if path == topDir {

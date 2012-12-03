@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"github.com/robfig/revel"
 	controllers0 "github.com/robfig/revel/modules/testrunner/app/controllers"
-	controllers "github.com/tw4452852/totorow/app/controllers"
-	tests "github.com/tw4452852/totorow/tests"
+	controllers "totorow/app/controllers"
+	tests "totorow/tests"
 )
 
 var (
