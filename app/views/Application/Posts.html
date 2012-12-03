@@ -1,0 +1,9 @@
+{{template "header.html" .}}
+
+<div id="post">
+	{{with .article}}
+	{{.Data}}
+	{{end}}
+</div>
+
+{{template "footer.html" .}}

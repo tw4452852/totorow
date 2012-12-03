@@ -36,6 +36,17 @@ func main() {
 					},
 				},
 			},
+			&rev.MethodType{
+				Name: "Posts",
+				Args: []*rev.MethodArg{ 
+					&rev.MethodArg{Name: "fileName", Type: reflect.TypeOf((*string)(nil)) },
+				},
+				RenderArgNames: map[int][]string{ 
+					17: []string{ 
+						"article",
+					},
+				},
+			},
 			
 		})
 	

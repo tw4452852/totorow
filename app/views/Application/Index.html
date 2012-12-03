@@ -1,20 +1,13 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
-
-<div class="site">
-	<div class="title">
-		<a href="/">Tw's blog</a>
-		<a class="extra" href="/">home</a>
-	</div>
-
-	<div id="post">
-	<ul class="posts">
-		{{with .posts}}
-			{{range .}}
-			<li><span>{{.Date}}</span> &raquo; <a href={{.Name}}>{{.Name}}</a></li>
-			{{end}}
+<div id="home">
+<ul class="posts">
+	{{with .posts}}
+		{{range .}}
+		<li><span>{{.Date}}</span> &raquo; <a href="/posts/{{.Name}}">{{.Name | trim}}</a></li>
 		{{end}}
-	</ul>
-	</div>
+	{{end}}
+</ul>
+</div>
 
 {{template "footer.html" .}}
