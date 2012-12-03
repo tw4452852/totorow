@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"bytes"
 	"github.com/robfig/revel"
 	"github.com/russross/blackfriday"
 	"html/template"
@@ -14,7 +13,7 @@ import (
 
 type Article struct {
 	Name string
-	Data string
+	Data template.HTML
 }
 
 //articles db
@@ -30,22 +29,17 @@ func (a articleDB) init(topDir string) error {
 		if err != nil {
 			return err
 		}
-		buffer := &bytes.Buffer{}
-		t := template.New("data")
-		t = template.Must(t.Parse(data))
-		t.Execute(buffer, nil)
-		a[post.Name] = &Article{TrimSuffix(post.Name), buffer.String()}
+		a[post.Name] = &Article{TrimSuffix(post.Name), data}
 	}
 	return nil
 }
 
-func generateHTML(path string) (string, error) {
+func generateHTML(path string) (template.HTML, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
-	html := blackfriday.MarkdownCommon(data)
-	return string(html), err
+	return template.HTML(blackfriday.MarkdownCommon(data)), err
 }
 
 type Post struct {
