@@ -2,9 +2,16 @@
 
 <html>
   <head>
-    <title>{{.title}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css">
+    <title>{{.title}}</title>
+	<meta name="author" content="Tw" />
+
+	<!--syntax highlighting CSS-->
+    <link rel="stylesheet" type="text/css" href="/public/css/syntax.css">
+
+	<!--Homepage CSS-->
+    <link rel="stylesheet" type="text/css" href="/public/css/screen.css" media="screen, projection" />
+
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
     <script src="/public/js/jquery-1.5.2.min.js" type="text/javascript" charset="utf-8"></script>
     {{range .moreStyles}}
@@ -14,4 +21,5 @@
       <script src="/public/{{.}}" type="text/javascript" charset="utf-8"></script>
     {{end}}
   </head>
+  <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
   <body>

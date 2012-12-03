@@ -1,14 +1,20 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
-<h1>Tw's blog</h1>
-<ul class="post">
-	{{with .records}}
-		{{range .}}
-		<li><span>{{.Date}}</span> &raquo; <a href={{.Name}}>{{.Name}}</a></li>
+<div class="site">
+	<div class="title">
+		<a href="/">Tw's blog</a>
+		<a class="extra" href="/">home</a>
+	</div>
+
+	<div id="post">
+	<ul class="posts">
+		{{with .records}}
+			{{range .}}
+			<li><span>{{.Date}}</span> &raquo; <a href={{.Name}}>{{.Name}}</a></li>
+			{{end}}
 		{{end}}
-	{{end}}
-</ul>
+	</ul>
+	</div>
 
 {{template "footer.html" .}}
-
