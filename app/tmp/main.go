@@ -31,8 +31,8 @@ func main() {
 				Args: []*rev.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
-					10: []string{ 
-						"posts",
+					11: []string{ 
+						"list",
 					},
 				},
 			},
@@ -42,8 +42,8 @@ func main() {
 					&rev.MethodArg{Name: "fileName", Type: reflect.TypeOf((*string)(nil)) },
 				},
 				RenderArgNames: map[int][]string{ 
-					17: []string{ 
-						"article",
+					18: []string{ 
+						"data",
 					},
 				},
 			},

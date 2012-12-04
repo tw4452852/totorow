@@ -7,33 +7,127 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
 
-type Article struct {
+//one record in posts list
+type Record struct {
+	Date time.Time
 	Name string
-	Data template.HTML
+}
+
+//file meta infos db
+type List []*Record
+
+func NewList() List {
+	//prepare 10 entries at first
+	return make([]*Record, 0, 10)
+}
+
+//add a record into list
+func (l *List) Add(r *Record) {
+	found := false
+	//find it by name
+	for i, record := range *l {
+		if record.Name == r.Name {
+			//replace it with new one
+			(*l)[i] = r
+			found = true
+			break
+		}
+	}
+	if !found {
+		//append new one
+		*l = append(*l, r)
+	}
+	//reupdate it
+	sort.Sort(*l)
+}
+
+//remove a record from list
+func (l *List) Remove(name string) {
+	found := false
+	for i, record := range *l {
+		if record.Name == name {
+			*l = append((*l)[:i], (*l)[i+1:]...)
+			found = true
+			break
+		}
+	}
+	if found {
+		sort.Sort(*l)
+	}
+}
+
+//let *List satisfy sort.Interface
+func (l List) Less(i, j int) bool {
+	return l[i].Date.Before(l[i].Date)
+}
+
+func (l List) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l List) Len() int {
+	return len(l)
+}
+
+type Posts map[string]template.HTML
+
+func NewPosts() Posts {
+	return make(map[string]template.HTML)
+}
+
+func (p Posts) Add(name string, data template.HTML) {
+	p[name] = data
+}
+
+func (p Posts) Delete(name string) {
+	delete(p, name)
+}
+
+func (p Posts) Get(name string) (template.HTML, bool) {
+	data, found := p[name]
+	return data, found
 }
 
 //articles db
-type articleDB map[string]*Article
-
-func NewArticleDB() articleDB {
-	return make(map[string]*Article)
+type articleDB struct {
+	articles Posts //storage
+	list     List  //posts list, sorted by time
 }
 
-func (a articleDB) init(topDir string) error {
-	for _, post := range posts {
-		data, err := generateHTML(topDir + post.Name)
+func newArticleDB() *articleDB {
+	return &articleDB{
+		articles: NewPosts(),
+		list:     NewList(),
+	}
+}
+
+func (a *articleDB) init(topDir string) error {
+	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
+		//skip dir itself
+		if info.IsDir() {
+			return nil
+		}
+		filename := info.Name()
+		a.list.Add(&Record{Date: info.ModTime(), Name: filename})
+		content, err := generateHTML(path)
 		if err != nil {
 			return err
 		}
-		a[post.Name] = &Article{TrimSuffix(post.Name), data}
+		a.articles.Add(filename, content)
+		rev.INFO.Printf("metadb add a file: %q\n", path)
+		return nil
+	}); err != nil {
+		return err
 	}
 	return nil
 }
 
+//use blackfriday to generate template.HTML
 func generateHTML(path string) (template.HTML, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -42,39 +136,9 @@ func generateHTML(path string) (template.HTML, error) {
 	return template.HTML(blackfriday.MarkdownCommon(data)), err
 }
 
-type Post struct {
-	Date string
-	Name string
-}
-
-//file meta infos db
-type metaDB []*Post
-
-func NewMetaDB() metaDB {
-	//prepare 10 entries
-	return make([]*Post, 0, 10)
-}
-
-func (m *metaDB) init(topDir string) error {
-	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
-		if path == topDir {
-			return nil
-		}
-		if info.IsDir() {
-			return filepath.SkipDir
-		}
-		rev.INFO.Printf("metadb add a file: %q\n", path)
-		*m = append(*m, &Post{info.ModTime().Format(time.ANSIC), info.Name()})
-		return nil
-	}); err != nil {
-		return err
-	}
-	return nil
-}
-
+//global db
 var (
-	posts    metaDB
-	articles articleDB
+	storage *articleDB
 )
 
 type PostPlugin struct {
@@ -86,21 +150,15 @@ func (d PostPlugin) OnAppStart() {
 	//assume posts in $GOPATH/src/totorow/app/posts/"
 	gopath := os.Getenv("GOPATH")
 	topDir := gopath + "/src/totorow/app/posts/"
-	posts = NewMetaDB()
-	if err := posts.init(topDir); err != nil {
-		rev.ERROR.Printf("init posts failed: path=%q err=%s\n", topDir, err)
-		return
-	}
-
 	//init articleDb
-	articles = NewArticleDB()
-	if err := articles.init(topDir); err != nil {
+	storage = newArticleDB()
+	if err := storage.init(topDir); err != nil {
 		rev.ERROR.Printf("init articles failed: err=%s\n", err)
 		return
 	}
 }
 
-//for tempelate map func
+//tempelate map func: trim filetype suffix
 func TrimSuffix(path string) string {
 	return strings.TrimRight(path, filepath.Ext(path))
 }

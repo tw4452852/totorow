@@ -2,10 +2,8 @@
 {{template "header.html" .}}
 <div id="home">
 <ul class="posts">
-	{{with .posts}}
-		{{range .}}
-		<li><span>{{.Date}}</span> &raquo; <a href="/posts/{{.Name}}">{{.Name | trim}}</a></li>
-		{{end}}
+	{{range .list}}
+	<li><span>{{.Date}}</span> &raquo; <a href="/posts/{{.Name}}">{{.Name | trim}}</a></li>
 	{{end}}
 </ul>
 </div>
