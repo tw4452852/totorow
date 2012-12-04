@@ -1,16 +1,22 @@
 package controllers
 
 import (
+	"github.com/howeyc/fsnotify"
 	"github.com/robfig/revel"
 	"github.com/russross/blackfriday"
 	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
 )
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 //one record in posts list
 type Record struct {
@@ -27,11 +33,17 @@ func NewList() List {
 }
 
 //add a record into list
-func (l *List) Add(r *Record) {
+func (l *List) Add(path string) error {
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	name := filepath.Base(path)
+	r := &Record{info.ModTime(), name}
 	found := false
 	//find it by name
 	for i, record := range *l {
-		if record.Name == r.Name {
+		if record.Name == name {
 			//replace it with new one
 			(*l)[i] = r
 			found = true
@@ -44,10 +56,12 @@ func (l *List) Add(r *Record) {
 	}
 	//reupdate it
 	sort.Sort(*l)
+	return nil
 }
 
 //remove a record from list
-func (l *List) Remove(name string) {
+func (l *List) Remove(path string) {
+	name := filepath.Base(path)
 	found := false
 	for i, record := range *l {
 		if record.Name == name {
@@ -80,11 +94,18 @@ func NewPosts() Posts {
 	return make(map[string]template.HTML)
 }
 
-func (p Posts) Add(name string, data template.HTML) {
-	p[name] = data
+func (p Posts) Add(path string) error {
+	name := filepath.Base(path)
+	content, err := generateHTML(path)
+	if err != nil {
+		return err
+	}
+	p[name] = content
+	return nil
 }
 
-func (p Posts) Delete(name string) {
+func (p Posts) Remove(path string) {
+	name := filepath.Base(path)
 	delete(p, name)
 }
 
@@ -95,35 +116,72 @@ func (p Posts) Get(name string) (template.HTML, bool) {
 
 //articles db
 type articleDB struct {
-	articles Posts //storage
-	list     List  //posts list, sorted by time
+	articles Posts             //storage
+	list     List              //posts list, sorted by time
+	watcher  *fsnotify.Watcher //watch posts
 }
 
 func newArticleDB() *articleDB {
+	//ignore error by fsnotify.NewWatcher()
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		rev.ERROR.Printf("New posts watcher failed: %s\n", err)
+	}
 	return &articleDB{
 		articles: NewPosts(),
 		list:     NewList(),
+		watcher:  watcher,
+	}
+}
+
+func (a *articleDB) watchLoop() {
+	for {
+		select {
+		case ev := <-a.watcher.Event:
+			path := ev.Name
+			rev.INFO.Printf("%s: %s\n", path, ev)
+			switch {
+			case ev.IsDelete() || ev.IsRename():
+				a.list.Remove(path)
+				a.articles.Remove(path)
+				a.watcher.RemoveWatch(path)
+			case ev.IsModify() || ev.IsCreate():
+				a.list.Add(path)
+				a.articles.Add(path)
+				a.watcher.Watch(path)
+			default:
+				//nothing
+			}
+		case err := <-a.watcher.Error:
+			rev.INFO.Println(err)
+		}
 	}
 }
 
 func (a *articleDB) init(topDir string) error {
 	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
+		if err := a.watcher.Watch(path); err != nil {
+			rev.ERROR.Printf("add watch(%q) failed: %s\n", path, err)
+		}
 		//skip dir itself
 		if info.IsDir() {
 			return nil
 		}
-		filename := info.Name()
-		a.list.Add(&Record{Date: info.ModTime(), Name: filename})
-		content, err := generateHTML(path)
-		if err != nil {
+		//translate article first
+		if err := a.articles.Add(path); err != nil {
 			return err
 		}
-		a.articles.Add(filename, content)
+		//then generate record in list
+		if err := a.list.Add(path); err != nil {
+			return err
+		}
 		rev.INFO.Printf("metadb add a file: %q\n", path)
 		return nil
 	}); err != nil {
 		return err
 	}
+	//start watchloop
+	go a.watchLoop()
 	return nil
 }
 
@@ -141,17 +199,17 @@ var (
 	storage *articleDB
 )
 
-type PostPlugin struct {
+type PostsPlugin struct {
 	rev.EmptyPlugin
 }
 
-func (d PostPlugin) OnAppStart() {
+func (p PostsPlugin) OnAppStart() {
+	//init articleDb
+	storage = newArticleDB()
 	//init metadb
 	//assume posts in $GOPATH/src/totorow/app/posts/"
 	gopath := os.Getenv("GOPATH")
 	topDir := gopath + "/src/totorow/app/posts/"
-	//init articleDb
-	storage = newArticleDB()
 	if err := storage.init(topDir); err != nil {
 		rev.ERROR.Printf("init articles failed: err=%s\n", err)
 		return
@@ -163,10 +221,18 @@ func TrimSuffix(path string) string {
 	return strings.TrimRight(path, filepath.Ext(path))
 }
 
-func init() {
-	//register post plugin
-	rev.RegisterPlugin(PostPlugin{})
+const TimePattern = "2006-01-02"
 
-	//register TrimSuffix template func
+//tempelate map func: translate time.Time.String() to year-month-day
+func Ymd(t time.Time) string {
+	return t.Format(TimePattern)
+}
+
+func init() {
+	//register posts plugin
+	rev.RegisterPlugin(PostsPlugin{})
+
+	//register template func
 	rev.TemplateFuncs["trim"] = TrimSuffix
+	rev.TemplateFuncs["ymd"] = Ymd
 }
