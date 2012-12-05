@@ -148,6 +148,17 @@ func (a *articleDB) watchLoop() {
 			rev.INFO.Printf("%s: %s\n", path, ev)
 			if filetypeFilter(path) {
 				switch {
+				case ev.IsRename():
+					//vim will rename the file with the same name,
+					//detect this case by os.Stat, if there is err,
+					//err must be isNotExit, otherwise err is nil
+					_, err := os.Stat(path)
+					if err == nil {
+						//do nothing
+						break
+					}
+					//file remove to another place, fallthrough
+					fallthrough
 				case ev.IsDelete() || ev.IsRename():
 					a.list.Remove(path)
 					a.articles.Remove(path)
