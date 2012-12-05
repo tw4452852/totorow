@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -134,23 +135,40 @@ func newArticleDB() *articleDB {
 	}
 }
 
+var filters = []*regexp.Regexp{
+	regexp.MustCompile(".*.swp"),
+	regexp.MustCompile(".*~"),
+}
+
+//filter file type , return pass
+func filetypeFilter(path string) (passed bool) {
+	for _, filter := range filters {
+		if filter.MatchString(path) {
+			return false
+		}
+	}
+	return true
+}
+
 func (a *articleDB) watchLoop() {
 	for {
 		select {
 		case ev := <-a.watcher.Event:
 			path := ev.Name
 			rev.INFO.Printf("%s: %s\n", path, ev)
-			switch {
-			case ev.IsDelete() || ev.IsRename():
-				a.list.Remove(path)
-				a.articles.Remove(path)
-				a.watcher.RemoveWatch(path)
-			case ev.IsModify() || ev.IsCreate():
-				a.list.Add(path)
-				a.articles.Add(path)
-				a.watcher.Watch(path)
-			default:
-				//nothing
+			if filetypeFilter(path) {
+				switch {
+				case ev.IsDelete() || ev.IsRename():
+					a.list.Remove(path)
+					a.articles.Remove(path)
+					a.watcher.RemoveWatch(path)
+				case ev.IsModify() || ev.IsCreate():
+					a.list.Add(path)
+					a.articles.Add(path)
+					a.watcher.Watch(path)
+				default:
+					//nothing
+				}
 			}
 		case err := <-a.watcher.Error:
 			rev.INFO.Println(err)
