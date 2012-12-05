@@ -136,7 +136,7 @@ func newArticleDB() *articleDB {
 }
 
 var filters = []*regexp.Regexp{
-	regexp.MustCompile(".*.swp"),
+	regexp.MustCompile(".*.sw[px]"),
 	regexp.MustCompile(".*~"),
 }
 
@@ -144,6 +144,7 @@ var filters = []*regexp.Regexp{
 func filetypeFilter(path string) (passed bool) {
 	for _, filter := range filters {
 		if filter.MatchString(path) {
+			rev.INFO.Printf("ignore %s\n", path)
 			return false
 		}
 	}

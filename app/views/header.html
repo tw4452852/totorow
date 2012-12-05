@@ -7,23 +7,28 @@
 	<meta name="author" content="Tw" />
 	<meta charset="utf-8" />
 
-	<!--syntax highlighting CSS-->
-    <link rel="stylesheet" type="text/css" href="/public/css/syntax.css">
-
 	<!--Homepage CSS-->
     <link rel="stylesheet" type="text/css" href="/public/css/screen.css" media="screen, projection" />
-
+	<!--syntax highlighting CSS-->
+	{{append . "moreStyles" "css/syntax.css"}}
+	<!--google prettyprint-->
+	{{append . "moreStyles" "css/prettify.css"}}
+	{{append . "moreScripts" "js/prettify.js"}}
+	{{append . "moreScripts" "js/lang-go.js"}}
+	<!--jquery-->
+	{{append . "moreScripts" "js/jquery-1.5.2.min.js"}}
+	<!--other-->
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
-    <script src="/public/js/jquery-1.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+
     {{range .moreStyles}}
-      <link rel="stylesheet" type="text/css" href="/public/{{.}}">
+      <link rel="stylesheet" type="text/css" href="/public/{{.}}" />
     {{end}}
     {{range .moreScripts}}
       <script src="/public/{{.}}" type="text/javascript" charset="utf-8"></script>
     {{end}}
   </head>
   <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
-  <body>
+  <body onload="prettyPrint()">
   <div class="site">
   <div class="title">
 	<a href="/">Tw's blog</a>
