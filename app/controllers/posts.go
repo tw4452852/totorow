@@ -140,17 +140,6 @@ var filters = []*regexp.Regexp{
 	regexp.MustCompile(".*~"),
 }
 
-//filter file type , return pass
-func filetypeFilter(path string) (passed bool) {
-	for _, filter := range filters {
-		if filter.MatchString(path) {
-			rev.INFO.Printf("ignore %s\n", path)
-			return false
-		}
-	}
-	return true
-}
-
 func (a *articleDB) watchLoop() {
 	for {
 		select {
@@ -177,13 +166,24 @@ func (a *articleDB) watchLoop() {
 	}
 }
 
+//filter file type , return pass
+func filetypeFilter(path string) (passed bool) {
+	for _, filter := range filters {
+		if filter.MatchString(path) {
+			rev.INFO.Printf("ignore %s\n", path)
+			return false
+		}
+	}
+	return true
+}
+
 func (a *articleDB) init(topDir string) error {
 	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
 		if err := a.watcher.Watch(path); err != nil {
 			rev.ERROR.Printf("add watch(%q) failed: %s\n", path, err)
 		}
 		//skip dir itself
-		if info.IsDir() {
+		if info.IsDir() || !filetypeFilter(path) {
 			return nil
 		}
 		//translate article first
