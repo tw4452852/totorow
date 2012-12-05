@@ -11,9 +11,10 @@ func (c Application) Index() rev.Result {
 	return c.Render(list)
 }
 func (c Application) Posts(fileName string) rev.Result {
+	title := fileName
 	data, ok := storage.articles.Get(fileName)
 	if !ok {
 		return c.NotFound("Can't find article " + fileName)
 	}
-	return c.Render(data)
+	return c.Render(data, title)
 }
