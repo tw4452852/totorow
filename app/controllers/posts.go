@@ -159,7 +159,7 @@ func (a *articleDB) watchLoop() {
 					}
 					//file remove to another place, fallthrough
 					fallthrough
-				case ev.IsDelete() || ev.IsRename():
+				case ev.IsDelete():
 					a.list.Remove(path)
 					a.articles.Remove(path)
 					a.watcher.RemoveWatch(path)
