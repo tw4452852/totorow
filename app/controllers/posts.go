@@ -90,7 +90,7 @@ func (l *List) Remove(path string) {
 
 //let *List satisfy sort.Interface
 func (l *List) Less(i, j int) bool {
-	return l.records[i].Date.Before(l.records[i].Date)
+	return l.records[i].Date.After(l.records[j].Date)
 }
 
 func (l *List) Swap(i, j int) {
