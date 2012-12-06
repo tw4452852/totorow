@@ -7,14 +7,15 @@ type Application struct {
 }
 
 func (c Application) Index() rev.Result {
-	list := storage.list
-	return c.Render(list)
+	c.RenderArgs["list"] = storage.list.records
+	return c.Render()
 }
 func (c Application) Posts(fileName string) rev.Result {
-	title := fileName
 	data, ok := storage.articles.Get(fileName)
 	if !ok {
 		return c.NotFound("Can't find article " + fileName)
 	}
-	return c.Render(data, title)
+	c.RenderArgs["data"] = data
+	c.RenderArgs["title"] = fileName
+	return c.Render()
 }

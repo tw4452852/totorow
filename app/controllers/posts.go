@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/howeyc/fsnotify"
 	"github.com/robfig/revel"
 	"github.com/russross/blackfriday"
 	"html/template"
@@ -26,11 +25,16 @@ type Record struct {
 }
 
 //file meta infos db
-type List []*Record
+type List struct {
+	basePath string
+	records  []*Record
+}
 
-func NewList() List {
-	//prepare 10 entries at first
-	return make([]*Record, 0, 10)
+func NewList(topDir string) *List {
+	return &List{
+		basePath: topDir,
+		records:  make([]*Record, 0),
+	}
 }
 
 //add a record into list
@@ -39,161 +43,131 @@ func (l *List) Add(path string) error {
 	if err != nil {
 		return err
 	}
-	name := filepath.Base(path)
-	r := &Record{info.ModTime(), name}
+	//ignore the err, we sure path is under basePath
+	name, _ := filepath.Rel(l.basePath, path)
+	now := info.ModTime()
 	found := false
 	//find it by name
-	for i, record := range *l {
+	for _, record := range l.records {
 		if record.Name == name {
 			//replace it with new one
-			(*l)[i] = r
+			if now.After(record.Date) {
+				record.Date = now
+				rev.INFO.Printf("db update: %q\n", path)
+			}
 			found = true
 			break
 		}
 	}
 	if !found {
 		//append new one
-		*l = append(*l, r)
+		r := &Record{now, name}
+		l.records = append(l.records, r)
+		rev.INFO.Printf("db add: %q\n", path)
 	}
 	//reupdate it
-	sort.Sort(*l)
+	sort.Sort(l)
 	return nil
 }
 
 //remove a record from list
 func (l *List) Remove(path string) {
-	name := filepath.Base(path)
+	//ignore the err, we sure path is under basePath
+	name, _ := filepath.Rel(l.basePath, path)
 	found := false
-	for i, record := range *l {
+	for i, record := range l.records {
 		if record.Name == name {
-			*l = append((*l)[:i], (*l)[i+1:]...)
+			l.records = append(l.records[:i], l.records[i+1:]...)
 			found = true
 			break
 		}
 	}
 	if found {
-		sort.Sort(*l)
+		rev.INFO.Printf("db delete: %q\n", path)
+		sort.Sort(l)
 	}
 }
 
 //let *List satisfy sort.Interface
-func (l List) Less(i, j int) bool {
-	return l[i].Date.Before(l[i].Date)
+func (l *List) Less(i, j int) bool {
+	return l.records[i].Date.Before(l.records[i].Date)
 }
 
-func (l List) Swap(i, j int) {
-	l[i], l[j] = l[j], l[i]
+func (l *List) Swap(i, j int) {
+	l.records[i], l.records[j] = l.records[j], l.records[i]
 }
 
-func (l List) Len() int {
-	return len(l)
+func (l *List) Len() int {
+	return len(l.records)
 }
 
-type Posts map[string]template.HTML
-
-func NewPosts() Posts {
-	return make(map[string]template.HTML)
+type Posts struct {
+	basePath string
+	posts    map[string]template.HTML
 }
 
-func (p Posts) Add(path string) error {
-	name := filepath.Base(path)
+func NewPosts(topDir string) *Posts {
+	return &Posts{
+		basePath: topDir,
+		posts:    make(map[string]template.HTML),
+	}
+}
+
+func (p *Posts) Add(path string) error {
+	//ignore the err, we sure path is under basePath
+	name, _ := filepath.Rel(p.basePath, path)
 	content, err := generateHTML(path)
 	if err != nil {
 		return err
 	}
-	p[name] = content
+	p.posts[name] = content
 	return nil
 }
 
-func (p Posts) Remove(path string) {
-	name := filepath.Base(path)
-	delete(p, name)
+func (p *Posts) Remove(path string) {
+	//ignore the err, we sure path is under basePath
+	name, _ := filepath.Rel(p.basePath, path)
+	delete(p.posts, name)
 }
 
-func (p Posts) Get(name string) (template.HTML, bool) {
-	data, found := p[name]
+func (p *Posts) Get(name string) (template.HTML, bool) {
+	data, found := p.posts[name]
 	return data, found
 }
 
 //articles db
 type articleDB struct {
-	articles Posts             //storage
-	list     List              //posts list, sorted by time
-	watcher  *fsnotify.Watcher //watch posts
+	basePath string //topdir of the db
+	articles *Posts //storage
+	list     *List  //posts list, sorted by time
 }
 
-func newArticleDB() *articleDB {
+func newArticleDB(topdir string) *articleDB {
 	//ignore error by fsnotify.NewWatcher()
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		rev.ERROR.Printf("New posts watcher failed: %s\n", err)
+	a := &articleDB{
+		basePath: topdir,
+		articles: NewPosts(topdir),
+		list:     NewList(topdir),
 	}
-	return &articleDB{
-		articles: NewPosts(),
-		list:     NewList(),
-		watcher:  watcher,
-	}
+	go a.watchLoop()
+	return a
 }
 
-var filters = []*regexp.Regexp{
-	regexp.MustCompile(".*.sw[px]"),
-	regexp.MustCompile(".*~"),
-}
-
+//add/update/remove with articleDB
 func (a *articleDB) watchLoop() {
-	for {
-		select {
-		case ev := <-a.watcher.Event:
-			path := ev.Name
-			rev.INFO.Printf("%s: %s\n", path, ev)
-			if filetypeFilter(path) {
-				switch {
-				case ev.IsRename():
-					//vim will rename the file with the same name,
-					//detect this case by os.Stat, if there is err,
-					//err must be isNotExit, otherwise err is nil
-					_, err := os.Stat(path)
-					if err == nil {
-						//do nothing
-						break
-					}
-					//file remove to another place, fallthrough
-					fallthrough
-				case ev.IsDelete():
-					a.list.Remove(path)
-					a.articles.Remove(path)
-					a.watcher.RemoveWatch(path)
-				case ev.IsModify() || ev.IsCreate():
-					a.list.Add(path)
-					a.articles.Add(path)
-					a.watcher.Watch(path)
-				default:
-					//nothing
-				}
-			}
-		case err := <-a.watcher.Error:
-			rev.INFO.Println(err)
-		}
+	c := time.Tick(1 * time.Second)
+	for _ = range c {
+		//delte the removed files
+		a.clean()
+		//update and add new files
+		a.update()
 	}
 }
 
-//filter file type , return pass
-func filetypeFilter(path string) (passed bool) {
-	for _, filter := range filters {
-		if filter.MatchString(path) {
-			rev.INFO.Printf("ignore %s\n", path)
-			return false
-		}
-	}
-	return true
-}
-
-func (a *articleDB) init(topDir string) error {
-	if err := filepath.Walk(topDir, func(path string, info os.FileInfo, err error) error {
-		if err := a.watcher.Watch(path); err != nil {
-			rev.ERROR.Printf("add watch(%q) failed: %s\n", path, err)
-		}
-		//skip dir itself
+//add/update file with db
+func (a *articleDB) update() {
+	if err := filepath.Walk(a.basePath, func(path string, info os.FileInfo, err error) error {
+		//only watch my filetype
 		if info.IsDir() || !filetypeFilter(path) {
 			return nil
 		}
@@ -205,14 +179,41 @@ func (a *articleDB) init(topDir string) error {
 		if err := a.list.Add(path); err != nil {
 			return err
 		}
-		rev.INFO.Printf("metadb add a file: %q\n", path)
 		return nil
 	}); err != nil {
-		return err
+		rev.WARN.Println(err)
 	}
-	//start watchloop
-	go a.watchLoop()
-	return nil
+}
+
+//remove files in db
+func (a *articleDB) clean() {
+	var paths []string
+	for _, record := range a.list.records {
+		path := a.basePath + record.Name
+		_, err := os.Stat(path)
+		if err != nil && os.IsNotExist(err) {
+			paths = append(paths, path)
+		}
+	}
+	for _, path := range paths {
+		a.articles.Remove(path)
+		a.list.Remove(path)
+	}
+}
+
+//supported filetype
+var filters = []*regexp.Regexp{
+	regexp.MustCompile(".*.md$"),
+}
+
+//filter file type , return pass
+func filetypeFilter(path string) (passed bool) {
+	for _, filter := range filters {
+		if filter.MatchString(path) {
+			return true
+		}
+	}
+	return false
 }
 
 //use blackfriday to generate template.HTML
@@ -234,16 +235,11 @@ type PostsPlugin struct {
 }
 
 func (p PostsPlugin) OnAppStart() {
-	//init articleDb
-	storage = newArticleDB()
-	//init metadb
 	//assume posts in $GOPATH/src/totorow/app/posts/"
 	gopath := os.Getenv("GOPATH")
 	topDir := gopath + "/src/totorow/app/posts/"
-	if err := storage.init(topDir); err != nil {
-		rev.ERROR.Printf("init articles failed: err=%s\n", err)
-		return
-	}
+	//init articleDb
+	storage = newArticleDB(topDir)
 }
 
 //tempelate map func: trim filetype suffix

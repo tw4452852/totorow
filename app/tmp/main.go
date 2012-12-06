@@ -32,7 +32,6 @@ func main() {
 				},
 				RenderArgNames: map[int][]string{ 
 					11: []string{ 
-						"list",
 					},
 				},
 			},
@@ -42,9 +41,7 @@ func main() {
 					&rev.MethodArg{Name: "fileName", Type: reflect.TypeOf((*string)(nil)) },
 				},
 				RenderArgNames: map[int][]string{ 
-					19: []string{ 
-						"data",
-						"title",
+					20: []string{ 
 					},
 				},
 			},
