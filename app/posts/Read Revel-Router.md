@@ -57,7 +57,7 @@ type Route struct {
 As the comments say, some fields are easy to understand. If you are still a little misleading, don't
 worry, it will become clear while we go on later.
 
-#### Methods - NewRoute
+#### Method - NewRoute
 
 Firstly, we go through the New-method, the method definition:
 
@@ -95,7 +95,7 @@ static routes case:
 
 - It only support GET method, if not it return with a warning directly.
 - Auto add trailing slash.
-- PathPattern is just the path itself and staticDir is what is following the "staticDir"
+- `PathPattern` is just the path itself and staticDir is what is following the "staticDir"
 
 Except the static routes, remaining cases are depend on the URL.
 
@@ -148,7 +148,7 @@ argsPattern is:
 ~~~ {prettyprint}
 argsPattern = regexp.MustCompile(`\{<(?P<pattern>[^>]+)>(?P<var>[a-zA-Z_0-9]+)\}`)
 ~~~
-All the args in the URL are collected in r.args, a slice of *arg:
+All the arguments in the URL are collected in `r.args`, a slice of *arg:
 
 ~~~ {prettyprint}
 type arg struct {
@@ -157,10 +157,10 @@ type arg struct {
 	constraint *regexp.Regexp
 }
 ~~~
-- name: is the var group in argsPattern
-- constraint: is the pattern group in argsPattern
+- name: is the var group in `argsPattern`
+- constraint: is the pattern group in `argsPattern`
 
-The next step is to generate pathPattern, due to the above work, it just group name according to the
+The next step is to generate `pathPattern`, due to the above work, it just group name according to the
 var name in url regexp
 
 ~~~ {prettyprint linenums:95}
@@ -173,7 +173,7 @@ pathPatternStr := argsPattern.ReplaceAllStringFunc(normPath, func(m string) stri
 r.pathPattern = regexp.MustCompile(pathPatternStr + "$")
 ~~~
 
-The last step is to generate actionPattern. It just used the generated args to do replacement:
+The last step is to generate `actionPattern`. It just used the generated args to do replacement:
 `{controller} => {(?P<controller>[^/]+)}`
 
 ~~~ {prettyprint linenums:103}
@@ -191,8 +191,8 @@ r.actionPattern = regexp.MustCompile(actionPatternStr)
 
 When all the works above is done, a route is generated.Let's see a little complicate example to walk
 through the entire flow.
-e.g. The route record is:`GET /{controller}/{<[a-z]+>action} {controller}.{methord}`, and the generated args
-slice is:
+e.g. The route record is:`GET /{controller}/{<[a-z]+>action} {controller}.{methord}`, and the
+generated arguments slice is:
 
 ~~~ {prettyprint}
 r.args = [
@@ -215,7 +215,7 @@ r.actionPattern = regexp.MustCompile("{(?P<controller>[^/]+)}\.{(?P<action>[a-z]
 
 #### Method - Match
 The route has the Match method that can judge whether a URL request is match this route or not. It
-express the result with a *RouteMatch, its definition:
+express the result with a `*RouteMatch`, its definition:
 
 ~~~ {prettyprint}
 type RouteMatch struct {
@@ -233,626 +233,296 @@ Method definition:
 func (r *Route) Match(method string, reqPath string) *RouteMatch
 ~~~
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Firstly, it check method, and it only accept HEAD and GET method.
+
+~~~ {prettyprint linenums:118}
+// Check the Method
+if r.Method != "*" && method != r.Method && !(method == "HEAD" && r.Method == "GET") {
+	return nil
+}
+~~~
+
+Then check the request URL to find arguments if any.
+
+~~~ {prettyprint linenums:123}
+// Check the Path
+var matches []string = r.pathPattern.FindStringSubmatch(reqPath)
+if matches == nil {
+	return nil
+}
+~~~
+
+As the `NewRoute` method, it also check if it is a staticDir file request at first.
+
+~~~ {prettyprint linenums:129}
+// If it's a static file request..
+if r.staticDir != "" {
+	// Check if it is specifying a module.. if so, look there instead.
+	// This is a tenative syntax: "staticDir:moduleName:(directory)"
+	var basePath, dirName string
+	if i := strings.Index(r.staticDir, ":"); i != -1 {
+		moduleName, dirName := r.staticDir[:i], r.staticDir[i+1:]
+		for _, module := range Modules {
+			if module.Name == moduleName {
+				basePath = path.Join(module.Path, dirName)
+			}
+		}
+		if basePath == "" {
+			ERROR.Print("No such module found: ", moduleName)
+			basePath = BasePath
+		}
+	} else {
+		basePath, dirName = BasePath, r.staticDir
+	}
+	return &RouteMatch{
+		StaticFilename: path.Join(basePath, dirName, matches[1]),
+	}
+}
+~~~
+- If `r.staticDir` contains modules(we will talk it at the following chapter of this serial), get
+  `basePath` and `dirName` from the module
+- Otherwise, `basePath` is from the global var `BasePath` and `dirName` is same as the `r.staticDir`.
+
+Following is the regular URL case. Get the parameters from the previous match slice.
+
+e.g if the route configure record is:`GET /{controller}/{method} {controller}.{method}` and the
+request URL is `/tw/name`, then the parameters here is `{"controller":"tw", "method":"name",}`
+
+~~~ {prettyprint linenums:153}
+// Figure out the Param names.
+params := make(map[string]string)
+for i, m := range matches[1:] {
+	params[r.pathPattern.SubexpNames()[i+1]] = m
+}
+~~~
+
+Get action, here it just find whether there is a "{" in `r.Action`. If so, replace it with the actual
+value, continue with the previous example:`{controller}.{method} => tw.name`
+
+~~~ {prettyprint linenums:159}
+// If the action is variablized, replace into it with the captured args.
+action := r.Action
+if strings.Contains(action, "{") {
+	for key, value := range params {
+		action = strings.Replace(action, "{"+key+"}", value, -1)
+	}
+}
+~~~
+
+One special case is the "404" action, In that case, return "404" action directly.
+
+~~~ {prettyprint linenums:167}
+// Special handling for explicit 404's.
+if action == "404" {
+	return &RouteMatch{
+		Action: "404",
+	}
+}
+~~~
+
+So far, all the things are well prepared, just spilt the action string with "." to extract the
+controller and method strings.
+
+~~~ {prettyprint linenums:174}
+// Split the action into controller and method
+actionSplit := strings.Split(action, ".")
+if len(actionSplit) != 2 {
+	ERROR.Printf("Failed to split action: %s (matching route: %s)", action, r.Action)
+	return nil
+}
+
+return &RouteMatch{
+	Action:         action,
+	ControllerName: actionSplit[0],
+	MethodName:     actionSplit[1],
+	Params:         params,
+}
+~~~
+
+### Data structure - Router
+
+To form a route database, revel use the structure "Router" to express it.
+
+~~~ {prettyprint}
+type Router struct {
+	Routes []*Route
+	path   string
+}
+~~~
+Just a route slice and a local file path to save the database in the local storage as a file.
+
+#### method - NewRouter
+When create a router database, it just need the local file path.
+
+~~~ {prettyprint linenums:315}
+func NewRouter(routesPath string) *Router {
+	return &Router{
+		path: routesPath,
+	}
+}
+~~~
+
+#### Method - Route
+To find a http request in the database, just walk through the slice, if there is a route match it,
+return this result with a `RouteMatch` structure, otherwise return nil.
+
+~~~ {prettyprint linenums:194}
+func (router *Router) Route(req *http.Request) *RouteMatch {
+	for _, route := range router.Routes {
+		if m := route.Match(req.Method, req.URL.Path); m != nil {
+			return m
+		}
+	}
+	return nil
+}
+~~~
+
+#### Method - Refresh
+To recovery the route database from the local files, method Refresh will accomplish this work.
+
+~~~ {prettyprint linenums:203}
+// Refresh re-reads the routes file and re-calculates the routing table.
+// Returns an error if a specified action could not be found.
+func (router *Router) Refresh() *Error {
+	// Get the routes file content.
+	contentBytes, err := ioutil.ReadFile(router.path)
+	if err != nil {
+		return &Error{
+			Title:       "Failed to load routes file",
+			Description: err.Error(),
+		}
+	}
+
+	return router.parse(string(contentBytes), true)
+}
+~~~
+If there is a error happened during reading the file, return a `revel.Error`. The main part is
+located in a internal method `Router.parse`
+
+~~~ {prettyprint}
+func (router *Router) parse(content string, validate bool) *Error
+~~~
+
+The same as a usually way, parse the file content line by line and collect all the found route in
+the `router.Routes` slice. If we are required to validate the founded route, `router.validate` will
+check it.
+
+~~~ {prettyprint linenums:220}
+routes := make([]*Route, 0, 10)
+
+// For each line..
+for n, line := range strings.Split(content, "\n") {
+	line = strings.TrimSpace(line)
+	if len(line) == 0 || line[0] == '#' {
+		continue
+	}
+
+	method, path, action, found := parseRouteLine(line)
+	if !found {
+		continue
+	}
+
+	route := NewRoute(method, path, action)
+	routes = append(routes, route)
+
+	if validate {
+		if err := router.validate(route); err != nil {
+			err.Path = router.path
+			err.Line = n + 1
+			err.SourceLines = strings.Split(content, "\n")
+			return err
+		}
+	}
+}
+
+router.Routes = routes
+return nil
+~~~
+
+`parseRouteLine` function is to extract the method, path, action from this line.
+
+~~~ {prettyprint linenums}
+func parseRouteLine(line string) (method, path, action string, found bool) {
+	var matches []string = routePattern.FindStringSubmatch(line)
+	if matches == nil {
+		return
+	}
+	method, path, action = matches[1], matches[4], matches[5]
+	found = true
+	return
+}
+~~~
+The `routePattern` is
+
+~~~ {prettyprint}
+// Groups:
+// 1: method
+// 4: path
+// 5: action
+var routePattern *regexp.Regexp = regexp.MustCompile(
+	"(?i)^(GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)" +
+		"[(]?([^)]*)(\\))?[ \t]+" +
+		"(.*/[^ \t]*)[ \t]+([^ \t(]+)(.+)?([ \t]*)$")
+~~~
+Let me analysis it:
+
+~~~ {prettyprint}
+1:method: (?i)^(GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*) //case insensitivity
+2: [^)]*
+3: \\)
+4:path: .*/[^ \t]*
+5:method: [^ \t(]+
+6: .+
+7: [ \t]*
+~~~
+
+validate is just validate the controller and method.static routes, variable routes and 404 cases are
+ignored.
+
+~~~ {prettyprint linenums:253}
+// Skip static routes
+if route.staticDir != "" {
+	return nil
+}
+
+// Skip variable routes.
+if strings.ContainsAny(route.Action, "{}") {
+	return nil
+}
+
+// Skip 404s
+if route.Action == "404" {
+	return nil
+}
+~~~
+
+Then find the controller and method from the `route.Action` and look up them, if not found, return
+`revel.Error`
+
+~~~ {prettyprint linenums:268}
+// We should be able to load the action.
+parts := strings.Split(route.Action, ".")
+if len(parts) != 2 {
+	return &Error{
+		Title: "Route validation error",
+		Description: fmt.Sprintf("Expected two parts (Controller.Action), but got %d: %s",
+			len(parts), route.Action),
+	}
+}
+
+ct := LookupControllerType(parts[0])
+if ct == nil {
+	return &Error{
+		Title:       "Route validation error",
+		Description: "Unrecognized controller: " + parts[0],
+	}
+}
+
+mt := ct.Method(parts[1])
+if mt == nil {
+	return &Error{
+		Title:       "Route validation error",
+		Description: "Unrecognized method: " + parts[1],
+	}
+}
+~~~
