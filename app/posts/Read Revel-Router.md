@@ -1,4 +1,4 @@
-# Read Revel source code - Router
+# Read Revel - Router
 
 This blog is based on the [Revel web framework][revel_github], So I will
 introduce this framework firstly.If you are the newbie, here is the
@@ -526,3 +526,124 @@ if mt == nil {
 	}
 }
 ~~~
+
+#### Method - Reverse
+
+The router provide a method name "Reverse", as the name says, it reverse a action string to a route
+record. But it uses another structure to express it:
+
+~~~ {prettyprint}
+type ActionDefinition struct {
+	Host, Method, Url, Action string
+	Star                      bool
+	Args                      map[string]string
+}
+~~~
+And this structure also satisfy stringer interface:
+
+~~~ {prettyprint linenums:327}
+func (a *ActionDefinition) String() string {
+	return a.Url
+}
+~~~
+We will encounter this structure later on.
+
+Well, let's look through the Reverse method. All the method is located in a loop through the route
+database. Once find the result, return it directly.
+
+~~~ {prettyprint linenums:333}
+NEXT_ROUTE:
+// Loop through the routes.
+for _, route := range router.Routes {
+
+	...
+
+	return &ActionDefinition{
+		Url:    url,
+		Method: method,
+		Star:   star,
+		Action: action,
+		Args:   argValues,
+		Host:   "TODO",
+	}
+}
+ERROR.Println("Failed to find reverse route:", action, argValues)
+return nil
+~~~
+
+And the detail of find method is to construct two maps and compare them. So at first, it construct
+the map in the target action string.
+
+~~~ {prettyprint linenums:340}
+var matches []string = route.actionPattern.FindStringSubmatch(action)
+if len(matches) == 0 {
+	continue
+}
+
+for i, match := range matches[1:] {
+	argValues[route.actionPattern.SubexpNames()[i+1]] = match
+}
+~~~
+
+And the database's map:
+
+~~~ {prettyprint linenums:349}
+// Create a lookup for the route args.
+routeArgs := make(map[string]*arg)
+for _, arg := range route.args {
+	routeArgs[arg.name] = arg
+}
+~~~
+
+Compare them:
+
+~~~ {prettyprint linenums:355}
+// Enforce the constraints on the arg values.
+for argKey, argValue := range argValues {
+	arg, ok := routeArgs[argKey]
+	if ok && !arg.constraint.MatchString(argValue) {
+		continue NEXT_ROUTE
+	}
+}
+~~~
+
+If found one, generate the URL, most of work is to generate the query part.
+
+~~~ {prettyprint linenums:364}
+var queryValues url.Values = make(url.Values)
+path := route.Path
+for argKey, argValue := range argValues {
+	if _, ok := routeArgs[argKey]; ok {
+		// If this arg goes into the path, put it in.
+		path = regexp.MustCompile(`\{(<[^>]+>)?`+regexp.QuoteMeta(argKey)+`\}`).
+			ReplaceAllString(path, url.QueryEscape(string(argValue)))
+	} else {
+		// Else, add it to the query string.
+		queryValues.Set(argKey, argValue)
+	}
+}
+~~~
+If found in the route args, replace it with the actual value, otherwise, set a new one.
+
+At last, connect the query part with the path.
+
+~~~ {prettyprint linenums:377}
+// Calculate the final URL and Method
+url := path
+if len(queryValues) > 0 {
+	url += "?" + queryValues.Encode()
+}
+~~~
+
+And extract the method part(special case "*" method):
+
+~~~ {prettyprint linenums:383}
+method := route.Method
+star := false
+if route.Method == "*" {
+	method = "GET"
+	star = true
+}
+~~~
+
+FIN.
