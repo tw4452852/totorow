@@ -1,6 +1,6 @@
 # Hello Tw
 
-This is my blog that I used about two days to build it on [Heroku][heroku]cloud
+This is my blog that I used about two days to build it on [Heroku][heroku] cloud
 application platform.This blog system is based on the [revel][revel] which is very good
 framework, so it saved me much time on building system.In fact, I just wrote a
 small plugin. This plugin contain the article database and a article list.
