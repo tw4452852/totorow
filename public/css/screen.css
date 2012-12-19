@@ -156,7 +156,7 @@ ul.posts {
 
   #post pre {
     border: 1px solid #ddd;
-    background-color: #eef;
+	background-color: #eef;
     padding: 0 .4em;
   }
 
@@ -167,12 +167,16 @@ ul.posts {
 
   #post code {
     border: 1px solid #ddd;
-    background-color: #eef;
+	background-color: #eef;
+	font-family: Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Lucida Console', monospace;
     font-size: 85%;
     padding: 0 .2em;
   }
 
     #post pre code {
+	  font-family: Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Lucida Console', monospace;
+	  overflow: auto;
+	  padding: 0.5em;
       border: none;
     }
 
