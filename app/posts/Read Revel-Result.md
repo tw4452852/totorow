@@ -16,7 +16,7 @@ type PlaintextErrorResult struct {
 
 Its Apply method is:
 
-~~~ {prettyprint linenums:97}
+~~~ {prettyprint}
 // This method is used when the template loader or error template is not available.
 func (r PlaintextErrorResult) Apply(req *Request, resp *Response) {
 	resp.WriteHeader(http.StatusInternalServerError, "text/plain")
@@ -39,7 +39,7 @@ type ErrorResult struct {
 
 And its `Apply` method. Firstly get error template.
 
-~~~ {prettyprint linenums:27}
+~~~ {prettyprint}
 format := req.Format
 status := resp.Status
 if status == 0 {
@@ -59,7 +59,7 @@ tmpl, err := MainTemplateLoader.Template(templatePath)
 
 If template is not found, use `PlaintextErrorResult` to show the error info.
 
-~~~ {prettyprint linenums:45}
+~~~ {prettyprint}
 showPlaintext := func(err error) {
 	PlaintextErrorResult{fmt.Errorf("Server Error:\n%s\n\n"+
 		"Additionally, an error occurred when rendering the error page:\n%s",
@@ -77,7 +77,7 @@ if tmpl == nil {
 
 At last, render the template and push the result into the http response.
 
-~~~ {prettyprint linenums:59}
+~~~ {prettyprint}
 // If it's not a revel error, wrap it in one.
 var revelError *Error
 switch e := r.Error.(type) {
@@ -121,7 +121,7 @@ type RenderHtmlResult struct {
 	html string
 }
 ~~~
-~~~ {prettyprint linenums:158}
+~~~ {prettyprint}
 func (r RenderHtmlResult) Apply(req *Request, resp *Response) {
 	resp.WriteHeader(http.StatusOK, "text/html")
 	resp.Out.Write([]byte(r.html))
@@ -138,7 +138,7 @@ type RenderJsonResult struct {
 	obj interface{}
 }
 ~~~
-~~~ {prettyprint linenums:167}
+~~~ {prettyprint}
 func (r RenderJsonResult) Apply(req *Request, resp *Response) {
 	var b []byte
 	var err error
@@ -167,7 +167,7 @@ type RenderXmlResult struct {
 	obj interface{}
 }
 ~~~
-~~~ {prettyprint linenums:189}
+~~~ {prettyprint}
 func (r RenderXmlResult) Apply(req *Request, resp *Response) {
 	var b []byte
 	var err error
@@ -196,7 +196,7 @@ type RenderTextResult struct {
 	text string
 }
 ~~~
-~~~ {prettyprint linenums:211}
+~~~ {prettyprint}
 func (r RenderTextResult) Apply(req *Request, resp *Response) {
 	resp.WriteHeader(http.StatusOK, "text/plain")
 	resp.Out.Write([]byte(r.text))
@@ -222,7 +222,7 @@ type BinaryResult struct {
 	Delivery ContentDisposition
 }
 ~~~
-~~~ {prettyprint linenums:230}
+~~~ {prettyprint}
 func (r *BinaryResult) Apply(req *Request, resp *Response) {
 	disposition := string(r.Delivery)
 	if r.Name != "" {
@@ -246,7 +246,7 @@ type RedirectToUrlResult struct {
 	url string
 }
 ~~~
-~~~ {prettyprint linenums:248}
+~~~ {prettyprint}
 func (r *RedirectToUrlResult) Apply(req *Request, resp *Response) {
 	resp.Out.Header().Set("Location", r.url)
 	resp.WriteHeader(http.StatusFound, "")
@@ -261,7 +261,7 @@ type RedirectToActionResult struct {
 	val interface{}
 }
 ~~~
-~~~ {prettyprint linenums:257}
+~~~ {prettyprint}
 func (r *RedirectToActionResult) Apply(req *Request, resp *Response) {
 	url, err := getRedirectUrl(r.val)
 	if err != nil {

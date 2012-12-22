@@ -26,13 +26,13 @@ type Flash struct {
 
 Before a request, it is generated with the cookies in the request.
 
-~~~ {prettyprint linenums:35}
+~~~ {prettyprint}
 func (p FlashPlugin) BeforeRequest(c *Controller) {
 	c.Flash = restoreFlash(c.Request.Request)
 	c.RenderArgs["flash"] = c.Flash.Data
 }
 ~~~
-~~~ {prettyprint linenums:54}
+~~~ {prettyprint}
 func restoreFlash(req *http.Request) Flash {
 	flash := Flash{
 		Data: make(map[string]string),
@@ -49,7 +49,7 @@ func restoreFlash(req *http.Request) Flash {
 
 And after the request, set the cookies according to the output map.
 
-~~~ {prettyprint linenums:40}
+~~~ {prettyprint}
 func (p FlashPlugin) AfterRequest(c *Controller) {
 	// Store the flash.
 	var flashValue string
@@ -67,7 +67,7 @@ func (p FlashPlugin) AfterRequest(c *Controller) {
 By the way, the flash predefine two methods that export msg to output map.
 They are `Error` and `Success`.
 
-~~~ {prettyprint linenums:17}
+~~~ {prettyprint}
 func (f Flash) Error(msg string, args ...interface{}) {
 	if len(args) == 0 {
 		f.Out["error"] = msg
@@ -103,7 +103,7 @@ A embedding struct of `*http.Request` adding `ContentType` and `Format` attribut
 
 There is method to new a Request:
 
-~~~ {prettyprint linenums:22}
+~~~ {prettyprint}
 func NewRequest(r *http.Request) *Request {
 	return &Request{
 		Request:     r,
@@ -115,7 +115,7 @@ func NewRequest(r *http.Request) *Request {
 
 `ResolveContentType` is to extract the content type from the http header.
 
-~~~ {prettyprint linenums:117}
+~~~ {prettyprint}
 // Get the content type.
 // e.g. From "multipart/form-data; boundary=--" to "multipart/form-data"
 // If none is specified, returns "text/html" by default.
@@ -130,7 +130,7 @@ func ResolveContentType(req *http.Request) string {
 
 `ResolveFormat` is same as the `ResolveContentType`.
 
-~~~ {prettyprint linenums:128}
+~~~ {prettyprint}
 func ResolveFormat(req *http.Request) string {
 	accept := req.Header.Get("accept")
 
@@ -168,7 +168,7 @@ type Response struct {
 ~~~
 And a new method to create it.
 
-~~~ {prettyprint linenums:30}
+~~~ {prettyprint}
 func NewResponse(w http.ResponseWriter) *Response {
 	return &Response{Out: w}
 }
@@ -176,7 +176,7 @@ func NewResponse(w http.ResponseWriter) *Response {
 
 A method to set `Status` and `ContentType` fields:
 
-~~~ {prettyprint linenums:150}
+~~~ {prettyprint}
 // Write the header (for now, just the status code).
 // The status may be set directly by the application (c.Response.Status = 501).
 // if it isn't, then fall back to the provided status code.
@@ -218,7 +218,7 @@ type MethodArg struct {
 
 To see whether a method is belong a controller, `ControllerType` export a `Method` method.
 
-~~~ {prettyprint linenums:183}
+~~~ {prettyprint}
 // Searches for a given exported method (case insensitive)
 func (ct *ControllerType) Method(name string) *MethodType {
 	lowerName := strings.ToLower(name)
@@ -235,7 +235,7 @@ just compare their names.
 And all `ControllerType` are collected in a map variable `controllers`. If you want to add a new
 controller, use the `RegisterController` function to do it.
 
-~~~ {prettyprint linenums:196}
+~~~ {prettyprint}
 // Register a Controller and its Methods with Revel.
 func RegisterController(c interface{}, methods []*MethodType) {
 	// De-star the controller type
@@ -259,7 +259,7 @@ func RegisterController(c interface{}, methods []*MethodType) {
 
 There is also a helper function `LookupControllerType` to find a controller in the map.
 
-~~~ {prettyprint linenums:215}
+~~~ {prettyprint}
 func LookupControllerType(name string) *ControllerType {
 	return controllers[strings.ToLower(name)]
 }
@@ -280,7 +280,7 @@ type AppController struct {
 And `rev.Controller` we will talk it later. `NewAppController` function will create a
 `AppController`, Note that you must firstly register the controller, then you can create it.
 
-~~~ {prettyprint linenums:39}
+~~~ {prettyprint}
 func NewAppController(req *Request, resp *Response, controllerName, methodName string) (*Controller, reflect.Value) {
 	var appControllerType *ControllerType = LookupControllerType(controllerName)
 	if appControllerType == nil {
@@ -297,7 +297,7 @@ Generally, everything is set to its zero value, except:
 - Embedded controller pointers are newed up.
 - The rev.Controller embedded type is set to the value provided.
 
-~~~ {prettyprint linenums:65}
+~~~ {prettyprint}
 func initNewAppController(appControllerType reflect.Type, c *Controller) reflect.Value {
 	// It might be a multi-level embedding, so we have to create new controllers
 	// at every level of the hierarchy.
@@ -372,7 +372,7 @@ Some fields we don't talk today, we are concern the structure itself now.
 
 ### Method - NewController
 
-~~~ {prettyprint linenums:32}
+~~~ {prettyprint}
 func NewController(req *Request, resp *Response, ct *ControllerType) *Controller {
 	return &Controller{
 		Name:     ct.Type.Name(),
@@ -398,7 +398,7 @@ func (c *Controller) Invoke(appControllerPtr reflect.Value, method reflect.Value
 
 Firstly, register two defer functions. One for handle panic and one for clean up some temporary stuffs.
 
-~~~ {prettyprint linenums:60}
+~~~ {prettyprint}
 // Handle panics.
 defer func() {
 	if err := recover(); err != nil {
@@ -427,7 +427,7 @@ defer func() {
 
 Then the sequence is:
 
-~~~ {prettyprint linenums:85}
+~~~ {prettyprint}
 // Run the plugins.
 plugins.BeforeRequest(c)
 
@@ -469,7 +469,7 @@ Render a template corresponding to the calling Controller method.
 
 At first, it get method itself and save it in `controller.MethodType`.
 
-~~~ {prettyprint linenums:166}
+~~~ {prettyprint}
 func (c *Controller) Render(extraRenderArgs ...interface{}) Result {
 	// Get the calling function name.
 	pc, _, line, ok := runtime.Caller(1)
@@ -498,7 +498,7 @@ func (c *Controller) Render(extraRenderArgs ...interface{}) Result {
 Then we should set the render variables. Because the Render method may be called from different
 places, we use line number to distinguish each other.
 
-~~~ {prettyprint linenums:190}
+~~~ {prettyprint}
 // Get the extra RenderArgs passed in.
 if renderArgNames, ok := methodType.RenderArgNames[line]; ok {
 	if len(renderArgNames) == len(extraRenderArgs) {
@@ -520,7 +520,7 @@ return c.RenderTemplate(c.Name + "/" + viewName + ".html")
 ### Method - RenderTemplate
 A less magical way to render a template. Renders the given template, using the current `controller.RenderArgs`.
 
-~~~ {prettyprint linenums:210}
+~~~ {prettyprint}
 func (c *Controller) RenderTemplate(templatePath string) Result {
 
 	// Get the Template.
@@ -540,7 +540,7 @@ The request template is loaded by a `templateLoader`.
 ### Method - RenderJson
 Same as `RenderTemplate`
 
-~~~ {prettyprint linenums:224}
+~~~ {prettyprint}
 // Uses encoding/json.Marshal to return JSON to the client.
 func (c *Controller) RenderJson(o interface{}) Result {
 	return RenderJsonResult{o}
@@ -550,7 +550,7 @@ func (c *Controller) RenderJson(o interface{}) Result {
 ### Method - RenderXml
 Same as `RenderTemplate`
 
-~~~ {prettyprint linenums:229}
+~~~ {prettyprint}
 // Uses encoding/xml.Marshal to return XML to the client.
 func (c *Controller) RenderXml(o interface{}) Result {
 	return RenderXmlResult{o}
@@ -560,7 +560,7 @@ func (c *Controller) RenderXml(o interface{}) Result {
 ### Method - RenderText
 Same as `RenderTemplate`
 
-~~~ {prettyprint linenums:234}
+~~~ {prettyprint}
 // Render plaintext in response, printf style.
 func (c *Controller) RenderText(text string, objs ...interface{}) Result {
 	finalText := text
@@ -574,7 +574,7 @@ func (c *Controller) RenderText(text string, objs ...interface{}) Result {
 ### Method - Todo
 Same as `RenderTemplate`
 
-~~~ {prettyprint linenums:243}
+~~~ {prettyprint}
 // Render a "todo" indicating that the action isn't done yet.
 func (c *Controller) Todo() Result {
 	c.Response.Status = http.StatusNotImplemented
@@ -588,7 +588,7 @@ func (c *Controller) Todo() Result {
 ### Method - NotFound
 Same as `RenderTemplate`
 
-~~~ {prettyprint linenums:252}
+~~~ {prettyprint}
 func (c *Controller) NotFound(msg string) Result {
 	c.Response.Status = http.StatusNotFound
 	return c.RenderError(&Error{
@@ -602,7 +602,7 @@ func (c *Controller) NotFound(msg string) Result {
 Return a file, either displayed inline or downloaded as an attachment.
 The name and size are taken from the file info.
 
-~~~ {prettyprint linenums:262}
+~~~ {prettyprint}
 func (c *Controller) RenderFile(file *os.File, delivery ContentDisposition) Result {
 	var length int64 = -1
 	fileInfo, err := file.Stat()
@@ -624,7 +624,7 @@ func (c *Controller) RenderFile(file *os.File, delivery ContentDisposition) Resu
 ### Method - Redirect
 Redirect to an action or to a URL.
 
-~~~ {prettyprint linenums:283}
+~~~ {prettyprint}
 func (c *Controller) Redirect(val interface{}, args ...interface{}) Result {
 	if url, ok := val.(string); ok {
 		if len(args) == 0 {

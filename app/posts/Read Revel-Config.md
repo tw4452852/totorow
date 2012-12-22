@@ -109,7 +109,7 @@ The `Config` supports four method for managing section.
 
 This method is used to add a new section to the configuration.
 
-~~~ {prettyprint linenums:17}
+~~~ {prettyprint}
 // AddSection adds a new section to the configuration.
 //
 // If the section is nil then uses the section by default which it's already
@@ -142,7 +142,7 @@ func (self *Config) AddSection(section string) bool {
 
 This method is used to remove a section from the configuration.
 
-~~~ {prettyprint linenums:43}
+~~~ {prettyprint}
 // RemoveSection removes a section from the configuration.
 // It returns true if the section was removed, and false if section did not exist.
 func (self *Config) RemoveSection(section string) bool {
@@ -170,7 +170,7 @@ func (self *Config) RemoveSection(section string) bool {
 
 This method is used to check the specified section is exist in the configuration.
 
-~~~ {prettyprint linenums:64}
+~~~ {prettyprint}
 // HasSection checks if the configuration has the given section.
 // (The default section always exists.)
 func (self *Config) HasSection(section string) bool {
@@ -184,7 +184,7 @@ func (self *Config) HasSection(section string) bool {
 
 This method is to get all the existing sections' names.
 
-~~~ {prettyprint linenums:72}
+~~~ {prettyprint}
 // Sections returns the list of sections in the configuration.
 // (The default section always exists.)
 func (self *Config) Sections() (sections []string) {
@@ -244,7 +244,7 @@ The wrapped methods handle all the errors in searching, and reported it by the b
 One special method is `MergedConfig`'s Options, it accepts a filter prefix string. The results from
 the config.Options will be filtered.
 
-~~~ {prettyprint linenums:101}
+~~~ {prettyprint}
 // Options returns all configuration option keys.
 // If a prefix is provided, then that is applied as a filter.
 func (c *MergedConfig) Options(prefix string) []string {

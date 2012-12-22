@@ -66,7 +66,7 @@ func NewRoute(method, path, action string) (r *Route)
 ~~~
 method, path and action are corresponding to the elements in syntax respectively.
 
-~~~ {prettyprint linenums:45}
+~~~ {prettyprint}
 r = &Route{
 	Method: strings.ToUpper(method),
 	Path:   path,
@@ -101,7 +101,7 @@ Except the static routes, remaining cases are depend on the URL.
 
 Now, the router only support the absolute path, so:
 
-~~~ {prettyprint linenums:71}
+~~~ {prettyprint}
 // TODO: Support non-absolute paths
 if !strings.HasPrefix(r.Path, "/") {
 	ERROR.Print("Absolute URL required.")
@@ -111,7 +111,7 @@ if !strings.HasPrefix(r.Path, "/") {
 
 Then it handle embedded arguments:
 
-~~~ {prettyprint linenums:78}
+~~~ {prettyprint}
 // Convert path arguments with unspecified regexes to standard form.
 // e.g. "/customer/{id}" => "/customer/{<[^/]+>id}
 normPath := nakedPathParamRegex.ReplaceAllStringFunc(r.Path, func(m string) string {
@@ -132,7 +132,7 @@ powerful, the work becomes easy. [This][regexp-tuto] is a go regexp package tuto
 After above translation, all the args pattern is uniform, like this `{<arg_pattern>arg_name}`,
 collect them all.
 
-~~~ {prettyprint linenums:85}
+~~~ {prettyprint}
 // Go through the arguments
 r.args = make([]*arg, 0, 3)
 for i, m := range argsPattern.FindAllStringSubmatch(normPath, -1) {
@@ -163,7 +163,7 @@ type arg struct {
 The next step is to generate `pathPattern`, due to the above work, it just group name according to the
 var name in url regexp
 
-~~~ {prettyprint linenums:95}
+~~~ {prettyprint}
 // Now assemble the entire path regex, including the embedded parameters.
 // e.g. /app/{<[^/]+>id} => /app/(?P<id>[^/]+)
 pathPatternStr := argsPattern.ReplaceAllStringFunc(normPath, func(m string) string {
@@ -176,7 +176,7 @@ r.pathPattern = regexp.MustCompile(pathPatternStr + "$")
 The last step is to generate `actionPattern`. It just used the generated args to do replacement:
 `{controller} => {(?P<controller>[^/]+)}`
 
-~~~ {prettyprint linenums:103}
+~~~ {prettyprint}
 // Handle action
 var actionPatternStr string = strings.Replace(r.Action, ".", `\.`, -1)
 for _, arg := range r.args {
@@ -235,7 +235,7 @@ func (r *Route) Match(method string, reqPath string) *RouteMatch
 
 Firstly, it check method, and it only accept HEAD and GET method.
 
-~~~ {prettyprint linenums:118}
+~~~ {prettyprint}
 // Check the Method
 if r.Method != "*" && method != r.Method && !(method == "HEAD" && r.Method == "GET") {
 	return nil
@@ -244,7 +244,7 @@ if r.Method != "*" && method != r.Method && !(method == "HEAD" && r.Method == "G
 
 Then check the request URL to find arguments if any.
 
-~~~ {prettyprint linenums:123}
+~~~ {prettyprint}
 // Check the Path
 var matches []string = r.pathPattern.FindStringSubmatch(reqPath)
 if matches == nil {
@@ -254,7 +254,7 @@ if matches == nil {
 
 As the `NewRoute` method, it also check if it is a staticDir file request at first.
 
-~~~ {prettyprint linenums:129}
+~~~ {prettyprint}
 // If it's a static file request..
 if r.staticDir != "" {
 	// Check if it is specifying a module.. if so, look there instead.
@@ -288,7 +288,7 @@ Following is the regular URL case. Get the parameters from the previous match sl
 e.g if the route configure record is:`GET /{controller}/{method} {controller}.{method}` and the
 request URL is `/tw/name`, then the parameters here is `{"controller":"tw", "method":"name",}`
 
-~~~ {prettyprint linenums:153}
+~~~ {prettyprint}
 // Figure out the Param names.
 params := make(map[string]string)
 for i, m := range matches[1:] {
@@ -299,7 +299,7 @@ for i, m := range matches[1:] {
 Get action, here it just find whether there is a "{" in `r.Action`. If so, replace it with the actual
 value, continue with the previous example:`{controller}.{method} => tw.name`
 
-~~~ {prettyprint linenums:159}
+~~~ {prettyprint}
 // If the action is variablized, replace into it with the captured args.
 action := r.Action
 if strings.Contains(action, "{") {
@@ -311,7 +311,7 @@ if strings.Contains(action, "{") {
 
 One special case is the "404" action, In that case, return "404" action directly.
 
-~~~ {prettyprint linenums:167}
+~~~ {prettyprint}
 // Special handling for explicit 404's.
 if action == "404" {
 	return &RouteMatch{
@@ -323,7 +323,7 @@ if action == "404" {
 So far, all the things are well prepared, just spilt the action string with "." to extract the
 controller and method strings.
 
-~~~ {prettyprint linenums:174}
+~~~ {prettyprint}
 // Split the action into controller and method
 actionSplit := strings.Split(action, ".")
 if len(actionSplit) != 2 {
@@ -354,7 +354,7 @@ Just a route slice and a local file path to save the database in the local stora
 #### method - NewRouter
 When create a router database, it just need the local file path.
 
-~~~ {prettyprint linenums:315}
+~~~ {prettyprint}
 func NewRouter(routesPath string) *Router {
 	return &Router{
 		path: routesPath,
@@ -366,7 +366,7 @@ func NewRouter(routesPath string) *Router {
 To find a http request in the database, just walk through the slice, if there is a route match it,
 return this result with a `RouteMatch` structure, otherwise return nil.
 
-~~~ {prettyprint linenums:194}
+~~~ {prettyprint}
 func (router *Router) Route(req *http.Request) *RouteMatch {
 	for _, route := range router.Routes {
 		if m := route.Match(req.Method, req.URL.Path); m != nil {
@@ -380,7 +380,7 @@ func (router *Router) Route(req *http.Request) *RouteMatch {
 #### Method - Refresh
 To recovery the route database from the local files, method Refresh will accomplish this work.
 
-~~~ {prettyprint linenums:203}
+~~~ {prettyprint}
 // Refresh re-reads the routes file and re-calculates the routing table.
 // Returns an error if a specified action could not be found.
 func (router *Router) Refresh() *Error {
@@ -407,7 +407,7 @@ The same as a usually way, parse the file content line by line and collect all t
 the `router.Routes` slice. If we are required to validate the founded route, `router.validate` will
 check it.
 
-~~~ {prettyprint linenums:220}
+~~~ {prettyprint}
 routes := make([]*Route, 0, 10)
 
 // For each line..
@@ -479,7 +479,7 @@ Let me analysis it:
 validate is just validate the controller and method.static routes, variable routes and 404 cases are
 ignored.
 
-~~~ {prettyprint linenums:253}
+~~~ {prettyprint}
 // Skip static routes
 if route.staticDir != "" {
 	return nil
@@ -499,7 +499,7 @@ if route.Action == "404" {
 Then find the controller and method from the `route.Action` and look up them, if not found, return
 `revel.Error`
 
-~~~ {prettyprint linenums:268}
+~~~ {prettyprint}
 // We should be able to load the action.
 parts := strings.Split(route.Action, ".")
 if len(parts) != 2 {
@@ -541,7 +541,7 @@ type ActionDefinition struct {
 ~~~
 And this structure also satisfy stringer interface:
 
-~~~ {prettyprint linenums:327}
+~~~ {prettyprint}
 func (a *ActionDefinition) String() string {
 	return a.Url
 }
@@ -551,7 +551,7 @@ We will encounter this structure later on.
 Well, let's look through the Reverse method. All the method is located in a loop through the route
 database. Once find the result, return it directly.
 
-~~~ {prettyprint linenums:333}
+~~~ {prettyprint}
 NEXT_ROUTE:
 // Loop through the routes.
 for _, route := range router.Routes {
@@ -574,7 +574,7 @@ return nil
 And the detail of find method is to construct two maps and compare them. So at first, it construct
 the map in the target action string.
 
-~~~ {prettyprint linenums:340}
+~~~ {prettyprint}
 var matches []string = route.actionPattern.FindStringSubmatch(action)
 if len(matches) == 0 {
 	continue
@@ -587,7 +587,7 @@ for i, match := range matches[1:] {
 
 And the database's map:
 
-~~~ {prettyprint linenums:349}
+~~~ {prettyprint}
 // Create a lookup for the route args.
 routeArgs := make(map[string]*arg)
 for _, arg := range route.args {
@@ -597,7 +597,7 @@ for _, arg := range route.args {
 
 Compare them:
 
-~~~ {prettyprint linenums:355}
+~~~ {prettyprint}
 // Enforce the constraints on the arg values.
 for argKey, argValue := range argValues {
 	arg, ok := routeArgs[argKey]
@@ -609,7 +609,7 @@ for argKey, argValue := range argValues {
 
 If found one, generate the URL, most of work is to generate the query part.
 
-~~~ {prettyprint linenums:364}
+~~~ {prettyprint}
 var queryValues url.Values = make(url.Values)
 path := route.Path
 for argKey, argValue := range argValues {
@@ -627,7 +627,7 @@ If found in the route args, replace it with the actual value, otherwise, set a n
 
 At last, connect the query part with the path.
 
-~~~ {prettyprint linenums:377}
+~~~ {prettyprint}
 // Calculate the final URL and Method
 url := path
 if len(queryValues) > 0 {
@@ -637,7 +637,7 @@ if len(queryValues) > 0 {
 
 And extract the method part(special case "*" method):
 
-~~~ {prettyprint linenums:383}
+~~~ {prettyprint}
 method := route.Method
 star := false
 if route.Method == "*" {

@@ -28,7 +28,7 @@ type TemplateLoader struct {
 ### Method - NewTemplateLoader
 To build a template loader , the only thing you should prepare is the base path of searching.
 
-~~~ {prettyprint linenums:125}
+~~~ {prettyprint}
 func NewTemplateLoader(paths []string) *TemplateLoader {
 	loader := &TemplateLoader{
 		paths: paths,
@@ -42,7 +42,7 @@ This method scans the views directory and parses all templates as Go templates
 
 It go through every file under base path and builds up a template set in the end.
 
-~~~ {prettyprint linenums:135}
+~~~ {prettyprint}
 func (loader *TemplateLoader) Refresh() *Error {
 	TRACE.Println("Refresh")
 	loader.compileError = nil
@@ -73,7 +73,7 @@ func (loader *TemplateLoader) Refresh() *Error {
 
 The callback function is to read every template file content and add it into template set
 
-~~~ {prettyprint lang-c linenums:147}
+~~~ {prettyprint lang-c}
 			if err != nil {
 				ERROR.Println("error walking templates:", err)
 				return nil
@@ -159,7 +159,7 @@ The callback function is to read every template file content and add it into tem
 Return the template with given name. The name is the template's path relative to a template loader
 root
 
-~~~ {prettyprint linenums:267}
+~~~ {prettyprint}
 func (loader *TemplateLoader) Template(name string) (Template, error) {
 	// Look up and return the template.
 	tmpl := loader.templateSet.Lookup(name)
@@ -199,7 +199,7 @@ type Template interface {
 	Render(wr io.Writer, arg interface{}) error
 }
 ~~~
-~~~ {prettyprint linenums:293}
+~~~ {prettyprint}
 func (gotmpl GoTemplate) Render(wr io.Writer, arg interface{}) error {
 	return gotmpl.Execute(wr, arg)
 }
@@ -225,7 +225,7 @@ Usage:
 ~~~
 The `eq` function:
 
-~~~ {prettyprint linenums:61}
+~~~ {prettyprint}
 "eq":  func(a, b interface{}) bool { return a == b },
 ~~~
 
@@ -242,7 +242,7 @@ Usage:
 ~~~
 The `set` function:
 
-~~~ {prettyprint linenums:62}
+~~~ {prettyprint}
 "set": func(renderArgs map[string]interface{}, key string, value interface{}) template.HTML {
 	renderArgs[key] = value
 	return template.HTML("")
@@ -265,7 +265,7 @@ Usage:
 
 The `append` function:
 
-~~~ {prettyprint linenums:66}
+~~~ {prettyprint}
 "append": func(renderArgs map[string]interface{}, key string, value interface{}) template.HTML {
 	if renderArgs[key] == nil {
 		renderArgs[key] = []interface{}{value}
@@ -317,7 +317,7 @@ type Field struct {
 
 It has two helper methods.
 
-~~~ {prettyprint linenums:42}
+~~~ {prettyprint}
 func (f *Field) ErrorClass() string {
 	if f.Error != nil {
 		return ERROR_CLASS
@@ -352,7 +352,7 @@ Usage:
 
 The `option` function:
 
-~~~ {prettyprint linenums:83}
+~~~ {prettyprint}
 "option": func(f *Field, val, label string) template.HTML {
 	selected := ""
 	if f.Value == val {
@@ -400,7 +400,7 @@ Usage:
 
 The `pad` function:
 
-~~~ {prettyprint linenums:101}
+~~~ {prettyprint}
 "pad": func(str string, width int) template.HTML {
 	if len(str) >= width {
 		return template.HTML(html.EscapeString(str))
@@ -451,10 +451,10 @@ Usage:
 
 The `url` function:
 
-~~~ {prettyprint linenums:60}
+~~~ {prettyprint}
 "url": ReverseUrl,
 ~~~
-~~~ {prettyprint linenums:308}
+~~~ {prettyprint}
 func ReverseUrl(args ...interface{}) string {
 	if len(args) == 0 {
 		ERROR.Println("Warning: no arguments provided to url function")
