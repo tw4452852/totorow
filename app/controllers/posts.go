@@ -53,7 +53,7 @@ func (l *List) Add(path string) error {
 			//replace it with new one
 			if now.After(record.Date) {
 				record.Date = now
-				rev.INFO.Printf("db update: %q\n", path)
+				revel.INFO.Printf("db update: %q\n", path)
 			}
 			found = true
 			break
@@ -63,7 +63,7 @@ func (l *List) Add(path string) error {
 		//append new one
 		r := &Record{now, name}
 		l.records = append(l.records, r)
-		rev.INFO.Printf("db add: %q\n", path)
+		revel.INFO.Printf("db add: %q\n", path)
 	}
 	//reupdate it
 	sort.Sort(l)
@@ -83,7 +83,7 @@ func (l *List) Remove(path string) {
 		}
 	}
 	if found {
-		rev.INFO.Printf("db delete: %q\n", path)
+		revel.INFO.Printf("db delete: %q\n", path)
 		sort.Sort(l)
 	}
 }
@@ -181,7 +181,7 @@ func (a *articleDB) update() {
 		}
 		return nil
 	}); err != nil {
-		rev.WARN.Println(err)
+		revel.WARN.Println(err)
 	}
 }
 
@@ -231,7 +231,7 @@ var (
 )
 
 type PostsPlugin struct {
-	rev.EmptyPlugin
+	revel.EmptyPlugin
 }
 
 func (p PostsPlugin) OnAppStart() {
@@ -256,9 +256,9 @@ func Ymd(t time.Time) string {
 
 func init() {
 	//register posts plugin
-	rev.RegisterPlugin(PostsPlugin{})
+	revel.RegisterPlugin(PostsPlugin{})
 
 	//register template func
-	rev.TemplateFuncs["trim"] = TrimSuffix
-	rev.TemplateFuncs["ymd"] = Ymd
+	revel.TemplateFuncs["trim"] = TrimSuffix
+	revel.TemplateFuncs["ymd"] = Ymd
 }
