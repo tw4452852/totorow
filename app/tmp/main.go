@@ -6,6 +6,7 @@ import (
 	"github.com/robfig/revel"
 	controllers0 "github.com/robfig/revel/modules/testrunner/app/controllers"
 	controllers "totorow/app/controllers"
+	tests "totorow/tests"
 )
 
 var (
@@ -84,6 +85,7 @@ func main() {
 	revel.DefaultValidationKeys = map[string]map[int]string{ 
 	}
 	revel.TestSuites = []interface{}{ 
+		(*tests.ApplicationTest)(nil),
 	}
 
 	revel.Run(*port)
