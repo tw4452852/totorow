@@ -111,6 +111,7 @@ func (d *storage) handleRequest(req *request) { /*{{{*/
 } /*}}}*/
 
 func (d *storage) reset() { /*{{{*/
+	d.waiter = sync.WaitGroup{}
 	d.data = make(map[string]interface{})
 } /*}}}*/
 

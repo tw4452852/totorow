@@ -261,11 +261,11 @@ func TestRemove(t *testing.T) { /*{{{*/
 	}
 } /*}}}*/
 
-type Releaser interface {
-	Release()
-}
+func TestGet(t *testing.T) { /*{{{*/
+	type Releaser interface {
+		Release()
+	}
 
-func TestGet(t *testing.T) {
 	cases := []testCase{
 		//get
 		{
@@ -324,6 +324,7 @@ func TestGet(t *testing.T) {
 				return nil
 			},
 		},
+
 		{
 			func() error {
 				if err := Add(ents[0], ents[1]); err != nil {
@@ -334,6 +335,30 @@ func TestGet(t *testing.T) {
 			[]interface{}{ents[0], ents[1]},
 			nil,
 			func(r *Result) error {
+				if len(r.Content) != 2 {
+					return fmt.Errorf("get some: result len(%d) != expect(%d)\n",
+						len(r.Content), 2)
+				}
+				if r.Content[0] != ents[1] || r.Content[1] != ents[1] {
+					return noFound
+				}
+				return nil
+			},
+		},
+
+		{
+			func() error {
+				if err := Add(ents[0], ents[1]); err != nil {
+					return err
+				}
+				return nil
+			},
+			[]interface{}{ents[0], ents[2]},
+			noFound,
+			func(r *Result) error {
+				if r != nil {
+					return errors.New("add some: result should be nil\n")
+				}
 				return nil
 			},
 		},
@@ -353,9 +378,9 @@ func TestGet(t *testing.T) {
 			}
 		}
 	}
-}
+} /*}}}*/
 
-func compareTwo(expects []*entry, reals []interface{}) error {
+func compareTwo(expects []*entry, reals []interface{}) error { /*{{{*/
 check:
 	for _, expect := range expects {
 		for _, real := range reals {
@@ -367,4 +392,4 @@ check:
 			expect)
 	}
 	return nil
-}
+} /*}}}*/
