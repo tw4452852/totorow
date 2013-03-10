@@ -18,6 +18,13 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
+//Poster represent a post
+type Poster interface {
+	Date() time.Time
+	Content() template.HTML
+	Tile() string
+}
+
 //one record in posts list
 type Record struct {
 	Date time.Time

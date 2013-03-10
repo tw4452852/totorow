@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -47,25 +48,23 @@ var (
 )
 
 func matchError(expect, real error, t *testing.T) { /*{{{*/
-	if expect == real {
-		return
-	}
-	if expect != nil && real != nil {
-		if expect.Error() == real.Error() {
+	if expect != real {
+		if expect == nil {
+			t.Errorf("expect err(nil), but get err(%s)\n", real.Error())
+			return
+		}
+		if real == nil {
+			t.Errorf("expect err(%s), but get err(nil)\n", expect.Error())
+			return
+		}
+		if strings.Contains(real.Error(), expect.Error()) {
 			return
 		}
 		t.Errorf("expect err(%s), but get err(%s)\n",
 			expect.Error(), real.Error())
 		return
 	}
-	if expect == nil {
-		t.Errorf("expect err(nil), but get err(%s)\n", real.Error())
-		return
-	}
-	if real == nil {
-		t.Errorf("expect err(%s), but get err(nil)\n", expect.Error())
-		return
-	}
+	return
 } /*}}}*/
 
 func TestAdd(t *testing.T) { /*{{{*/

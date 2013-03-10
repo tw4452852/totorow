@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+var dataCenter *storage
+
 type storage struct { /*{{{*/
 	requestCh chan *request //for outcoming request
 	closeCh   chan bool     //for exit
@@ -13,15 +15,14 @@ type storage struct { /*{{{*/
 	data   map[string]interface{} //internal data storage
 } /*}}}*/
 
-var dataCenter *storage
-
-//Init init the dataCenter
+//Init init the dataCenter and repositories
 func Init() { /*{{{*/
 	dataCenter = &storage{
 		requestCh: make(chan *request),
 		data:      make(map[string]interface{}),
 	}
 	go dataCenter.serve()
+	initRepos()
 } /*}}}*/
 
 func (d *storage) serve() { /*{{{*/
