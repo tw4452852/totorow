@@ -3,7 +3,7 @@
 # ~~~~
 
 GET     /                                       Application.Index
-GET		/posts/{fileName}						Application.Posts
+GET		/posts/{key}							Application.Posts
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

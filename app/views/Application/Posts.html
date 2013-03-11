@@ -1,7 +1,12 @@
 {{template "header.html" .}}
 
 <div id="post">
-{{.data}}
+	{{with .post}}
+		{{range .Content}}
+		{{.Content}}
+		{{end}}
+	{{.Free.Release}}
+	{{end}}
 </div>
 
 {{template "footer.html" .}}

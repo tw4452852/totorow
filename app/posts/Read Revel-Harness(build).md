@@ -1,3 +1,4 @@
+Read Revel - Harness(build) | 2012-12-23
 # Read Revel - Harness(build)
 
 After getting the source code information, we can build the code to generate the binary file.

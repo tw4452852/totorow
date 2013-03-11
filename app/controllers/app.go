@@ -1,21 +1,27 @@
 package controllers
 
-import "github.com/robfig/revel"
+import (
+	"github.com/robfig/revel"
+)
 
 type Application struct {
 	*revel.Controller
 }
 
 func (c Application) Index() revel.Result {
-	c.RenderArgs["list"] = storage.list.records
+	l, err := GetFullList()
+	if err != nil {
+		return c.RenderError(err)
+	}
+	c.RenderArgs["list"] = l
 	return c.Render()
 }
-func (c Application) Posts(fileName string) revel.Result {
-	data, ok := storage.articles.Get(fileName)
-	if !ok {
-		return c.NotFound("Can't find article " + fileName)
+
+func (c Application) Posts(key string) revel.Result {
+	p, err := GetPost(key)
+	if err != nil {
+		return c.RenderError(err)
 	}
-	c.RenderArgs["data"] = data
-	c.RenderArgs["title"] = fileName
+	c.RenderArgs["post"] = p
 	return c.Render()
 }

@@ -1,3 +1,4 @@
+Read Revel - Router | 2012-12-5
 # Read Revel - Router
 
 This blog is based on the [Revel web framework][revel_github], So I will

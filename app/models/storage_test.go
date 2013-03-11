@@ -91,10 +91,24 @@ func TestAdd(t *testing.T) { /*{{{*/
 			noKeyerErr,
 			func(*Result) error {
 				if dataCenter.find(ents[0].data) != ents[0] {
-					return errors.New("valied+valid add: valied is not found\n")
+					return errors.New("valid+invalid add: valied is not found\n")
 				}
 				if dataCenter.find(inents[0].data) == inents[0] {
-					return errors.New("valied+valid add: invalied is found\n")
+					return errors.New("valid+invalid add: invalied is found\n")
+				}
+				return nil
+			},
+		},
+		{
+			nil,
+			[]interface{}{ents[1], ents[2]},
+			nil,
+			func(*Result) error {
+				if dataCenter.find(ents[1].data) != ents[1] {
+					return errors.New("valid+valid add: first is not found\n")
+				}
+				if dataCenter.find(ents[2].data) != ents[2] {
+					return errors.New("valid+valid add: second is not found\n")
 				}
 				return nil
 			},

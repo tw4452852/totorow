@@ -48,8 +48,9 @@ type Result struct { /*{{{*/
 
 //Satisfy the Releaser
 //Release the reference
-func (r *Result) Release() { /*{{{*/
+func (r *Result) Release() string { /*{{{*/
 	dataCenter.waiter.Done()
+	return ""
 } /*}}}*/
 
 //Get may get something from the dataCenter

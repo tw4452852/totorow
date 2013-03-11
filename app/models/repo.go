@@ -3,6 +3,7 @@ package models
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -55,6 +56,7 @@ func (rs repos) refresh(cfg *Configs) { /*{{{*/
 					log.Printf("add repo: setup failed with err(%s)\n", err)
 					continue
 				}
+				log.Printf("add a repo(%q)\n", key)
 				rs[key] = repo
 			} else {
 				log.Printf("add repo: type(%s) isn't supported yet\n",
@@ -84,15 +86,14 @@ func initRepos() { /*{{{*/
 func checkConfig(r repos) { /*{{{*/
 	//get repo config file
 	//Must be: $GOPATH/src/github.com/tw4452852/totorow/conf/repos.xml
-	const configPath = "github.com/tw4452852/totorow/conf/repos.xml"
+	const configPath = "src/github.com/tw4452852/totorow/conf/repos.xml"
 	//refresh every 10s
 	timer := time.NewTicker(10 * time.Second)
 	for _ = range timer.C {
-		cfg, err := getConfig(os.Getenv("GOPATH") + configPath)
+		cfg, err := getConfig(filepath.Join(os.Getenv("GOPATH"), configPath))
 		if err != nil {
 			//if there is some error(e.g. file doesn't exist) while reading
 			//config file, just skip this refresh
-			log.Println("read repos.xml error: %s\n", err)
 			continue
 		}
 		r.refresh(cfg)

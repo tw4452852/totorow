@@ -1,3 +1,4 @@
+Read Revel - Result | 2012-12-10
 # Read Revel - Result
 Following the previous chapter, we continue to talk about kinds of Result that revel has
 accomplished.

@@ -3,9 +3,10 @@
 <div id="home">
 <ul class="posts">
 	{{with .list}}
-	{{range .}}
-	<li><span>{{.Date | ymd}}</span> &raquo; <a href="/posts/{{.Name}}">{{.Name | trim}}</a></li>
-	{{end}}
+		{{range .Content}}
+		<li><span>{{.Date}}</span> &raquo; <a href="/posts/{{.Key}}">{{.Title}}</a></li>
+		{{end}}
+	{{.Free.Release}}
 	{{end}}
 </ul>
 </div>

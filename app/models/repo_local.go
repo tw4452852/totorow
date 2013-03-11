@@ -98,10 +98,6 @@ func (lr *localRepo) update() { /*{{{*/
 		post, found := lr.posts[relPath]
 		if !found {
 			lp := newLocalPost(lr.root + relPath)
-			if err := Add(lp); err != nil {
-				log.Printf("add local post failed: %s\n", err)
-				return nil
-			}
 			lr.posts[relPath] = lp
 			return nil
 		}
@@ -172,6 +168,8 @@ func (lp *localPost) Update() error { /*{{{*/
 		if err := Add(lp); err != nil {
 			log.Printf("update a local post failed: %s\n", err)
 		}
+		log.Printf("update a local post: path(%s), key(%x), date(%s), lastUpdate(%s)\n",
+			lp.path, lp.Key(), lp.Date(), lp.lastUpdate)
 	}
 	return nil
 } /*}}}*/
