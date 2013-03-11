@@ -15,7 +15,7 @@ type Configs struct {
 	Content []Config `xml:"repo"`
 }
 
-func getConfig(path string) (*Configs, error) {
+func getConfig(path string) (*Configs, error) { /*{{{*/
 	file, err := os.Open(path)
 	if err != nil {
 		log.Printf("open config file error: %s\n", err)
@@ -48,4 +48,4 @@ func getConfig(path string) (*Configs, error) {
 		cfg.Content = cc
 	}
 	return cfg, nil
-}
+} /*}}}*/

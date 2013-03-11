@@ -260,10 +260,6 @@ func TestRemove(t *testing.T) { /*{{{*/
 } /*}}}*/
 
 func TestGet(t *testing.T) { /*{{{*/
-	type Releaser interface {
-		Release()
-	}
-
 	cases := []testCase{
 		//get
 		{
@@ -296,7 +292,7 @@ func TestGet(t *testing.T) { /*{{{*/
 						return errors.New("get all: wait failed\n")
 					}
 				} else {
-					return errors.New("get all: result is not a releaser\n")
+					return errors.New("get all: result is not a Releaser\n")
 				}
 				return nil
 			},

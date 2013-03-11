@@ -175,11 +175,6 @@ func (lp *localPost) Update() error { /*{{{*/
 	return nil
 } /*}}}*/
 
-const (
-	TitleAndDateSeperator = "|"
-	TimePattern           = "2006-01-02"
-)
-
 func generateAll(file *os.File) (key, title string, date time.Time, content template.HTML, err error) { /*{{{*/
 	c, e := ioutil.ReadAll(file)
 	if e != nil {

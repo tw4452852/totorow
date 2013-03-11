@@ -15,16 +15,6 @@ type storage struct { /*{{{*/
 	data   map[string]interface{} //internal data storage
 } /*}}}*/
 
-//Init init the dataCenter and repositories
-func Init() { /*{{{*/
-	dataCenter = &storage{
-		requestCh: make(chan *request),
-		data:      make(map[string]interface{}),
-	}
-	go dataCenter.serve()
-	initRepos()
-} /*}}}*/
-
 func (d *storage) serve() { /*{{{*/
 	for {
 		select {

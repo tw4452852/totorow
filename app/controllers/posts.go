@@ -39,13 +39,8 @@ type Lister interface { /*{{{*/
 	Title() template.HTML
 } /*}}}*/
 
-//Releaser release a reference
-type Releaser interface { /*{{{*/
-	Release() string
-} /*}}}*/
-
 type List struct { /*{{{*/
-	Free    Releaser
+	Free    models.Releaser
 	Content []Lister
 } /*}}}*/
 
@@ -82,7 +77,7 @@ func GetFullList() (*List, error) { /*{{{*/
 } /*}}}*/
 
 type Post struct { /*{{{*/
-	Free    Releaser
+	Free    models.Releaser
 	Content []Poster
 } /*}}}*/
 

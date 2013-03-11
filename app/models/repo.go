@@ -84,13 +84,10 @@ func initRepos() { /*{{{*/
 } /*}}}*/
 
 func checkConfig(r repos) { /*{{{*/
-	//get repo config file
-	//Must be: $GOPATH/src/github.com/tw4452852/totorow/conf/repos.xml
-	const configPath = "src/github.com/tw4452852/totorow/conf/repos.xml"
 	//refresh every 10s
 	timer := time.NewTicker(10 * time.Second)
 	for _ = range timer.C {
-		cfg, err := getConfig(filepath.Join(os.Getenv("GOPATH"), configPath))
+		cfg, err := getConfig(filepath.Join(os.Getenv("GOPATH"), ConfigPath))
 		if err != nil {
 			//if there is some error(e.g. file doesn't exist) while reading
 			//config file, just skip this refresh
