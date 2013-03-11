@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/robfig/revel"
 	"github.com/russross/blackfriday"
+	"github.com/tw4452852/totorow/app/models"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -20,9 +21,10 @@ func init() {
 
 //Poster represent a post
 type Poster interface {
-	Date() time.Time
+	models.Keyer
+	Date() template.HTML
 	Content() template.HTML
-	Tile() string
+	Title() template.HTML
 }
 
 //one record in posts list

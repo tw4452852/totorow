@@ -1,7 +1,6 @@
 package models
 
 import (
-	"syscall"
 	"testing"
 )
 
@@ -25,13 +24,15 @@ func TestConfig(t *testing.T) {
 
 		{
 			"invalid/path/to/config.xml",
-			syscall.ENOTDIR,
+			pathNotFound,
 			nil,
 		},
 	}
 	for _, c := range cases {
 		cfg, err := getConfig(c.path)
-		matchError(c.err, err, t)
+		if e := matchError(c.err, err); e != nil {
+			t.Fatal(e)
+		}
 		if checkConfigs(c.expect, cfg, t) {
 			t.Errorf("expect configs: %v\n, real configs %v\n",
 				*c.expect, *cfg)

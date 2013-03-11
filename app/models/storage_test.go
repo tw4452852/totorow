@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -46,26 +45,6 @@ var (
 		&invalidEntry{"2"},
 	}
 )
-
-func matchError(expect, real error, t *testing.T) { /*{{{*/
-	if expect != real {
-		if expect == nil {
-			t.Errorf("expect err(nil), but get err(%s)\n", real.Error())
-			return
-		}
-		if real == nil {
-			t.Errorf("expect err(%s), but get err(nil)\n", expect.Error())
-			return
-		}
-		if strings.Contains(real.Error(), expect.Error()) {
-			return
-		}
-		t.Errorf("expect err(%s), but get err(%s)\n",
-			expect.Error(), real.Error())
-		return
-	}
-	return
-} /*}}}*/
 
 func TestAdd(t *testing.T) { /*{{{*/
 	cases := []testCase{
@@ -128,7 +107,9 @@ func TestAdd(t *testing.T) { /*{{{*/
 				t.Fatal(err)
 			}
 		}
-		matchError(c.err, Add(c.input...), t)
+		if e := matchError(c.err, Add(c.input...)); e != nil {
+			t.Fatal(e)
+		}
 		if c.checker != nil {
 			if err := c.checker(nil); err != nil {
 				t.Fatal(err)
@@ -201,7 +182,9 @@ func TestUpdate(t *testing.T) { /*{{{*/
 				t.Fatal(err)
 			}
 		}
-		matchError(c.err, Add(c.input...), t)
+		if e := matchError(c.err, Add(c.input...)); e != nil {
+			t.Fatal(e)
+		}
 		if c.checker != nil {
 			if err := c.checker(nil); err != nil {
 				t.Fatal(err)
@@ -251,7 +234,9 @@ func TestRemove(t *testing.T) { /*{{{*/
 				t.Fatal(err)
 			}
 		}
-		matchError(c.err, Remove(c.input...), t)
+		if e := matchError(c.err, Remove(c.input...)); e != nil {
+			t.Fatal(e)
+		}
 		if c.checker != nil {
 			if err := c.checker(nil); err != nil {
 				t.Fatal(err)
@@ -370,7 +355,9 @@ func TestGet(t *testing.T) { /*{{{*/
 			}
 		}
 		result, err := Get(c.input...)
-		matchError(c.err, err, t)
+		if e := matchError(c.err, err); e != nil {
+			t.Fatal(e)
+		}
 		if c.checker != nil {
 			if err := c.checker(result); err != nil {
 				t.Fatal(err)
