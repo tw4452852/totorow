@@ -3,6 +3,7 @@ package models
 import (
 	"crypto/md5"
 	"errors"
+	"fmt"
 	"github.com/russross/blackfriday"
 	"html/template"
 	"io"
@@ -207,7 +208,7 @@ func generateAll(file *os.File) (key, title string, date time.Time, content temp
 	//generate key
 	h := md5.New()
 	io.WriteString(h, string(c))
-	key = string(h.Sum(nil))
+	key = fmt.Sprintf("%x", h.Sum(nil))
 
 	title = strings.TrimSpace(firstLine[:sepIndex])
 	date = t
