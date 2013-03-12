@@ -72,7 +72,7 @@ func (lr *localRepo) watch() { /*{{{*/
 func (lr *localRepo) clean() { /*{{{*/
 	cleans := make([]string, 0)
 	for relPath := range lr.posts {
-		absPath := lr.root + relPath
+		absPath := filepath.Join(lr.root, relPath)
 		_, err := os.Stat(absPath)
 		if err != nil && os.IsNotExist(err) {
 			cleans = append(cleans, relPath)
@@ -84,6 +84,7 @@ func (lr *localRepo) clean() { /*{{{*/
 			log.Printf("remove local post failed: %s\n", err)
 			continue
 		}
+		log.Printf("remove a local post: %s\n", lp.path)
 		delete(lr.posts, relPath)
 	}
 } /*}}}*/
@@ -98,7 +99,7 @@ func (lr *localRepo) update() { /*{{{*/
 		relPath, _ := filepath.Rel(lr.root, path)
 		post, found := lr.posts[relPath]
 		if !found {
-			lp := newLocalPost(lr.root + relPath)
+			lp := newLocalPost(path)
 			lr.posts[relPath] = lp
 			return nil
 		}
@@ -165,12 +166,12 @@ func (lp *localPost) Update() error { /*{{{*/
 		lp.key, lp.title, lp.date, lp.content, lp.lastUpdate =
 			key, title, date, content, ut
 		lp.mutex.Unlock()
+		log.Printf("update a local post: path(%s), key(%x), date(%s), lastUpdate(%s)\n",
+			lp.path, lp.Key(), lp.Date(), lp.lastUpdate)
 		//update the content in dataCenter
 		if err := Add(lp); err != nil {
 			log.Printf("update a local post failed: %s\n", err)
 		}
-		log.Printf("update a local post: path(%s), key(%x), date(%s), lastUpdate(%s)\n",
-			lp.path, lp.Key(), lp.Date(), lp.lastUpdate)
 	}
 	return nil
 } /*}}}*/

@@ -4,16 +4,17 @@ import (
 	"encoding/xml"
 	"log"
 	"os"
+	"path/filepath"
 )
 
-type Config struct {
+type Config struct { /*{{{*/
 	Type string `xml:"type"`
 	Root string `xml:"root"`
-}
+} /*}}}*/
 
-type Configs struct {
+type Configs struct { /*{{{*/
 	Content []Config `xml:"repo"`
-}
+} /*}}}*/
 
 func getConfig(path string) (*Configs, error) { /*{{{*/
 	file, err := os.Open(path)
@@ -30,10 +31,15 @@ func getConfig(path string) (*Configs, error) { /*{{{*/
 	}
 
 	//filter the empty repo
+	//and join the $GOPATH to the rel local root path
 	clean := make([]int, 0)
 	for i, c := range cfg.Content {
 		if c.Type == "" || c.Root == "" {
 			clean = append(clean, i)
+			continue
+		}
+		if c.Type == "local" && !filepath.IsAbs(c.Root) {
+			cfg.Content[i].Root = filepath.Join(os.Getenv("GOPATH"), c.Root)
 		}
 	}
 	if len(clean) > 0 {

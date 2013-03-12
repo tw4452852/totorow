@@ -1,6 +1,6 @@
 <repos>
 	<repo>
 		<type>local</type>
-		<root>/home/tw/golib/src/github.com/tw4452852/totorow/app/posts/</root>
+		<root>src/github.com/tw4452852/totorow/app/posts/</root>
 	</repo>
 </repos>

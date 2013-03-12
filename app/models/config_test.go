@@ -1,6 +1,8 @@
 package models
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -17,6 +19,7 @@ func TestConfig(t *testing.T) {
 				[]Config{
 					{"git", "http://github.com/1/1"},
 					{"local", "/tmp/1/1"},
+					{"local", filepath.Join(os.Getenv("GOPATH"), "/tmp/1/1")},
 					{"github", "http://github.com/2/2"},
 				},
 			},

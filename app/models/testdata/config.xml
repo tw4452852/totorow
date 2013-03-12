@@ -14,6 +14,10 @@
 		<type>local</type>
 	</repo>
 	<repo>
+		<type>local</type>
+		<root>tmp/1/1</root>
+	</repo>
+	<repo>
 		<invalidroot>/tmp/1/1</invalidroot>
 	</repo>
 	<repo>
