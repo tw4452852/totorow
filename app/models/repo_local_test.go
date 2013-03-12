@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
-const repoRoot = "./testdata/localRepo/"
+const repoRoot = "testdata/localRepo/"
 
 func TestLocalSetup(t *testing.T) { /*{{{*/
 	cases := []struct {
@@ -71,9 +72,8 @@ func TestLocalRepo(t *testing.T) { /*{{{*/
 					os.Remove(repoRoot + "3")
 				}()
 				expect := map[string]*localPost{
-					"1.md": &localPost{path: repoRoot + "1.md"},
-					"level1/1.md": &localPost{path: repoRoot + "level1/" +
-						"1.md"},
+					"1.md":        &localPost{path: filepath.Join(repoRoot, "1.md")},
+					"level1/1.md": &localPost{path: filepath.Join(repoRoot+"level1/", "1.md")},
 				}
 				lr.update()
 				if err := checkLocalPosts(expect, lr.posts); err != nil {
@@ -96,7 +96,7 @@ func TestLocalRepo(t *testing.T) { /*{{{*/
 					os.Remove(repoRoot + "level1")
 				}()
 				expect := map[string]*localPost{
-					"1.md": &localPost{path: repoRoot + "1.md"},
+					"1.md": &localPost{path: filepath.Join(repoRoot, "1.md")},
 				}
 				lr.clean()
 				if err := checkLocalPosts(expect, lr.posts); err != nil {
