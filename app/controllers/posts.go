@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-func init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-}
-
 type PostsPlugin struct {
 	revel.EmptyPlugin
 }
@@ -22,9 +18,9 @@ func (p PostsPlugin) OnAppStart() {
 }
 
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	//register posts plugin
 	revel.RegisterPlugin(PostsPlugin{})
-
 }
 
 //Poster represent a post
@@ -45,19 +41,19 @@ type List struct { /*{{{*/
 } /*}}}*/
 
 //List satisfy sort.Interface
-func (l *List) Len() int {
+func (l *List) Len() int { /*{{{*/
 	return len(l.Content)
-}
+} /*}}}*/
 
-func (l *List) Less(i, j int) bool {
+func (l *List) Less(i, j int) bool { /*{{{*/
 	ti, _ := time.Parse(storage.TimePattern, string(l.Content[i].Date()))
 	tj, _ := time.Parse(storage.TimePattern, string(l.Content[j].Date()))
 	return ti.After(tj)
-}
+} /*}}}*/
 
-func (l *List) Swap(i, j int) {
+func (l *List) Swap(i, j int) { /*{{{*/
 	l.Content[i], l.Content[j] = l.Content[j], l.Content[i]
-}
+} /*}}}*/
 
 //GetFullList get entire posts list
 func GetFullList() (*List, error) { /*{{{*/
