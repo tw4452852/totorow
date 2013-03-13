@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/robfig/revel"
-	"github.com/tw4452852/totorow/app/models"
+	"github.com/tw4452852/storage"
 	"html/template"
 	"runtime"
 	"sort"
@@ -18,7 +18,7 @@ type PostsPlugin struct {
 }
 
 func (p PostsPlugin) OnAppStart() {
-	models.Init()
+	storage.Init()
 }
 
 func init() {
@@ -34,13 +34,13 @@ type Poster interface { /*{{{*/
 
 //Lister represent a list entry
 type Lister interface { /*{{{*/
-	models.Keyer
+	storage.Keyer
 	Date() template.HTML
 	Title() template.HTML
 } /*}}}*/
 
 type List struct { /*{{{*/
-	Free    models.Releaser
+	Free    storage.Releaser
 	Content []Lister
 } /*}}}*/
 
@@ -50,8 +50,8 @@ func (l *List) Len() int {
 }
 
 func (l *List) Less(i, j int) bool {
-	ti, _ := time.Parse(models.TimePattern, string(l.Content[i].Date()))
-	tj, _ := time.Parse(models.TimePattern, string(l.Content[j].Date()))
+	ti, _ := time.Parse(storage.TimePattern, string(l.Content[i].Date()))
+	tj, _ := time.Parse(storage.TimePattern, string(l.Content[j].Date()))
 	return ti.After(tj)
 }
 
@@ -61,7 +61,7 @@ func (l *List) Swap(i, j int) {
 
 //GetFullList get entire posts list
 func GetFullList() (*List, error) { /*{{{*/
-	results, err := models.Get()
+	results, err := storage.Get()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func GetFullList() (*List, error) { /*{{{*/
 } /*}}}*/
 
 type Post struct { /*{{{*/
-	Free    models.Releaser
+	Free    storage.Releaser
 	Content []Poster
 } /*}}}*/
 
@@ -89,7 +89,7 @@ func (pk postKey) Key() string { /*{{{*/
 } /*}}}*/
 
 func GetPost(key string) (*Post, error) { /*{{{*/
-	results, err := models.Get(postKey(key))
+	results, err := storage.Get(postKey(key))
 	if err != nil {
 		return nil, err
 	}

@@ -7,7 +7,6 @@ import (
 	controllers1 "github.com/robfig/revel/modules/static/app/controllers"
 	controllers0 "github.com/robfig/revel/modules/testrunner/app/controllers"
 	controllers "github.com/tw4452852/totorow/app/controllers"
-	_ "github.com/tw4452852/totorow/app/models"
 	tests "github.com/tw4452852/totorow/tests"
 )
 
