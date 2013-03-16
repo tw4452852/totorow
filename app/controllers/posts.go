@@ -4,6 +4,7 @@ import (
 	"github.com/robfig/revel"
 	"github.com/tw4452852/storage"
 	"html/template"
+	"io"
 	"runtime"
 	"sort"
 	"time"
@@ -98,3 +99,26 @@ func GetPost(key string) (*Post, error) { /*{{{*/
 	}
 	return p, nil
 } /*}}}*/
+
+type StaticReader struct {
+	storage.Releaser
+	io.Reader
+}
+
+func (sr *StaticReader) Close() {
+	if v, ok := sr.Reader.(io.Closer); ok {
+		v.Close()
+	}
+	sr.Releaser.Release()
+}
+
+func GetStaticReader(key, path string) (*StaticReader, error) {
+	results, err := storage.Get(postKey(key))
+	if err != nil {
+		return nil, err
+	}
+	return &StaticReader{
+		Releaser: results,
+		Reader:   results.Content[0].Static(path),
+	}, nil
+}

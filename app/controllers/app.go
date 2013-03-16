@@ -25,3 +25,15 @@ func (c Application) Posts(key string) revel.Result {
 	c.RenderArgs["post"] = p
 	return c.Render()
 }
+
+func (c Application) Static(key, path string) revel.Result {
+	reader, err := GetStaticReader(key, path)
+	if err != nil {
+		return c.RenderError(err)
+	}
+	return &revel.BinaryResult{
+		Reader:   reader,
+		Delivery: "",
+		Length:   -1,
+	}
+}
