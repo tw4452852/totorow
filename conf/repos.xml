@@ -1,6 +1,8 @@
 <repos>
 	<repo>
-		<type>local</type>
-		<root>src/github.com/tw4452852/totorow/app/posts/</root>
+		<type>github</type>
+		<root>posts</root>
+		<username>twpost</username>
+		<password>tw1234567</password>
 	</repo>
 </repos>
