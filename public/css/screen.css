@@ -170,13 +170,11 @@ ul.posts {
 	background-color: #eef;
 	font-family: Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Lucida Console', monospace;
     font-size: 85%;
-    padding: 0 .2em;
   }
 
     #post pre code {
 	  font-family: Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Lucida Console', monospace;
 	  overflow: auto;
-	  padding: 0.5em;
       border: none;
     }
 
