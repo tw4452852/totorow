@@ -160,6 +160,15 @@ ul.posts {
     padding: 0 .4em;
   }
 
+  #post thead,
+  #post tbody,
+  #post table,
+  #post tr,
+  #post td {
+    border: 1px solid black;
+	border-collapse: collapse;
+  }
+
   #post ul,
   #post ol {
     margin-left: 1.35em;
