@@ -100,19 +100,21 @@ func GetPost(key string) (*Post, error) { /*{{{*/
 	return p, nil
 } /*}}}*/
 
-type StaticReader struct {
+type StaticReader struct { /*{{{*/
 	storage.Releaser
 	io.Reader
-}
+} /*}}}*/
 
-func (sr *StaticReader) Close() {
+//implememt io.Closer
+func (sr *StaticReader) Close() error { /*{{{*/
 	if v, ok := sr.Reader.(io.Closer); ok {
 		v.Close()
 	}
 	sr.Releaser.Release()
-}
+	return nil
+} /*}}}*/
 
-func GetStaticReader(key, path string) (*StaticReader, error) {
+func GetStaticReader(key, path string) (*StaticReader, error) { /*{{{*/
 	results, err := storage.Get(postKey(key))
 	if err != nil {
 		return nil, err
@@ -121,4 +123,4 @@ func GetStaticReader(key, path string) (*StaticReader, error) {
 		Releaser: results,
 		Reader:   results.Content[0].Static(path),
 	}, nil
-}
+} /*}}}*/
