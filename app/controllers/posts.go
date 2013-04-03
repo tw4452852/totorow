@@ -15,7 +15,7 @@ type PostsPlugin struct {
 }
 
 func (p PostsPlugin) OnAppStart() {
-	storage.Init()
+	storage.Init("src/totorow/conf/repos.xml")
 }
 
 func init() {
