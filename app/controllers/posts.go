@@ -7,7 +7,6 @@ import (
 	"io"
 	"runtime"
 	"sort"
-	"time"
 )
 
 type PostsPlugin struct {
@@ -41,27 +40,15 @@ type List struct { /*{{{*/
 	Content []Lister
 } /*}}}*/
 
-//List satisfy sort.Interface
-func (l *List) Len() int { /*{{{*/
-	return len(l.Content)
-} /*}}}*/
-
-func (l *List) Less(i, j int) bool { /*{{{*/
-	ti, _ := time.Parse(storage.TimePattern, string(l.Content[i].Date()))
-	tj, _ := time.Parse(storage.TimePattern, string(l.Content[j].Date()))
-	return ti.After(tj)
-} /*}}}*/
-
-func (l *List) Swap(i, j int) { /*{{{*/
-	l.Content[i], l.Content[j] = l.Content[j], l.Content[i]
-} /*}}}*/
-
 //GetFullList get entire posts list
 func GetFullList() (*List, error) { /*{{{*/
 	results, err := storage.Get()
 	if err != nil {
 		return nil, err
 	}
+	//sorted by date
+	sort.Sort(results)
+
 	l := &List{
 		Content: make([]Lister, len(results.Content)),
 		Free:    results,
@@ -69,7 +56,6 @@ func GetFullList() (*List, error) { /*{{{*/
 	for i, v := range results.Content {
 		l.Content[i] = v.(Lister)
 	}
-	sort.Sort(l)
 	return l, nil
 } /*}}}*/
 
