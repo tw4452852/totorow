@@ -37,3 +37,11 @@ func (c Application) Static(key, path string) revel.Result {
 		Length:   -1,
 	}
 }
+
+func (c Application) RSS() revel.Result {
+	rss, err := GetRSS()
+	if err != nil {
+		return c.RenderError(err)
+	}
+	return c.RenderXml(rss)
+}
