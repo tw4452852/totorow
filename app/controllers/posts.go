@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/robfig/revel"
 	"github.com/tw4452852/storage"
 	"html/template"
@@ -40,6 +41,14 @@ type List struct { /*{{{*/
 	Content []Lister
 } /*}}}*/
 
+type entry struct {
+	storage.Poster
+}
+
+func (e entry) Date() template.HTML {
+	return template.HTML(e.Poster.Date().Format(storage.TimePattern))
+}
+
 //GetFullList get entire posts list
 func GetFullList() (*List, error) { /*{{{*/
 	results, err := storage.Get()
@@ -50,11 +59,17 @@ func GetFullList() (*List, error) { /*{{{*/
 	sort.Sort(results)
 
 	l := &List{
-		Content: make([]Lister, len(results.Content)),
+		Content: make([]Lister, 0, len(results.Content)),
 		Free:    results,
 	}
-	for i, v := range results.Content {
-		l.Content[i] = v.(Lister)
+	for _, v := range results.Content {
+		var e interface{} = entry{v}
+		if lister, ok := e.(Lister); ok {
+			l.Content = append(l.Content, lister)
+		}
+	}
+	if len(l.Content) == 0 {
+		return nil, errors.New("There is no posts. Maybe is generating... Refresh after a while")
 	}
 	return l, nil
 } /*}}}*/

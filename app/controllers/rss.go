@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-var waitErr = errors.New("wait a minute and refresh")
+var waitErr = errors.New("Is generating... Wait a minute and refresh")
 
 //GetRSS get rss object in atom format
 func GetRSS() (interface{}, error) {
@@ -33,7 +33,7 @@ func GetRSS() (interface{}, error) {
 			Email: "tw19881113@gmail.com",
 		},
 		//use the newest post time
-		Updated: atom.TimeStr(r.Content[0].Date()),
+		Updated: atom.Time(r.Content[0].Date()),
 	}
 
 	//fill the entries
@@ -43,7 +43,7 @@ func GetRSS() (interface{}, error) {
 		feed.Entry[i] = &atom.Entry{
 			Title:   string(p.Title()),
 			ID:      p.Key(),
-			Updated: atom.TimeStr(p.Date()),
+			Updated: atom.Time(p.Date()),
 			Link:    []atom.Link{atom.Link{Href: "/posts/" + p.Key()}},
 			Content: &atom.Text{Body: string(p.Content()), Type: "html"},
 		}
