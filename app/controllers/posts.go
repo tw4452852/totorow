@@ -37,7 +37,6 @@ type Lister interface { /*{{{*/
 } /*}}}*/
 
 type List struct { /*{{{*/
-	Free    storage.Releaser
 	Content []Lister
 } /*}}}*/
 
@@ -60,7 +59,6 @@ func GetFullList() (*List, error) { /*{{{*/
 
 	l := &List{
 		Content: make([]Lister, 0, len(results.Content)),
-		Free:    results,
 	}
 	for _, v := range results.Content {
 		var e interface{} = entry{v}
@@ -75,7 +73,6 @@ func GetFullList() (*List, error) { /*{{{*/
 } /*}}}*/
 
 type Post struct { /*{{{*/
-	Free    storage.Releaser
 	Content []Poster
 } /*}}}*/
 
@@ -92,7 +89,6 @@ func GetPost(key string) (*Post, error) { /*{{{*/
 		return nil, err
 	}
 	p := &Post{
-		Free:    results,
 		Content: make([]Poster, len(results.Content)),
 	}
 	for i, v := range results.Content {
@@ -102,17 +98,7 @@ func GetPost(key string) (*Post, error) { /*{{{*/
 } /*}}}*/
 
 type StaticReader struct { /*{{{*/
-	storage.Releaser
 	io.Reader
-} /*}}}*/
-
-//implememt io.Closer
-func (sr *StaticReader) Close() error { /*{{{*/
-	if v, ok := sr.Reader.(io.Closer); ok {
-		v.Close()
-	}
-	sr.Releaser.Release()
-	return nil
 } /*}}}*/
 
 func GetStaticReader(key, path string) (*StaticReader, error) { /*{{{*/
@@ -121,7 +107,6 @@ func GetStaticReader(key, path string) (*StaticReader, error) { /*{{{*/
 		return nil, err
 	}
 	return &StaticReader{
-		Releaser: results,
-		Reader:   results.Content[0].Static(path),
+		Reader: results.Content[0].Static(path),
 	}, nil
 } /*}}}*/

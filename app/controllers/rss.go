@@ -15,7 +15,6 @@ func GetRSS() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer r.Release()
 	if len(r.Content) == 0 {
 		return nil, waitErr
 	}
