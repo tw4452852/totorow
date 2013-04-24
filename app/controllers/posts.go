@@ -97,16 +97,10 @@ func GetPost(key string) (*Post, error) { /*{{{*/
 	return p, nil
 } /*}}}*/
 
-type StaticReader struct { /*{{{*/
-	io.Reader
-} /*}}}*/
-
-func GetStaticReader(key, path string) (*StaticReader, error) { /*{{{*/
+func GetStaticReader(key, path string) (io.Reader, error) { /*{{{*/
 	results, err := storage.Get(postKey(key))
 	if err != nil {
 		return nil, err
 	}
-	return &StaticReader{
-		Reader: results.Content[0].Static(path),
-	}, nil
+	return results.Content[0].Static(path), nil
 } /*}}}*/
