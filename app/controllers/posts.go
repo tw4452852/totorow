@@ -10,18 +10,14 @@ import (
 	"sort"
 )
 
-type PostsPlugin struct {
-	revel.EmptyPlugin
-}
-
-func (p PostsPlugin) OnAppStart() {
+func Init() {
 	storage.Init("src/totorow/conf/repos.xml")
 }
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	//register posts plugin
-	revel.RegisterPlugin(PostsPlugin{})
+	revel.OnAppStart(Init)
 }
 
 //Poster represent a post
