@@ -1,11 +1,17 @@
 {{template "header.html" .}}
 
-<div id="post">
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+<div id="content">
+<div class="article">
 	{{with .post}}
 		{{range .Content}}
 		{{.Content}}
 		{{end}}
 	{{end}}
+</div>
+</div>
+</div>
 </div>
 
 {{template "footer.html" .}}

@@ -1,13 +1,16 @@
 {{set . "title" "Tw's blog"}}
 {{template "header.html" .}}
-<div id="home">
-<ul class="posts">
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+<div id="content">
+	<h1 class="title">Article index</h1>
 	{{with .list}}
 		{{range .Content}}
 		<li><span>{{.Date}}</span> &raquo; <a href="/posts/{{.Key}}">{{.Title}}</a></li>
 		{{end}}
 	{{end}}
-</ul>
+</div>
+</div>
 </div>
 
 {{template "footer.html" .}}

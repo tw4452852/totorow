@@ -8,15 +8,7 @@
 	<meta charset="utf-8" />
 
 	<!--Homepage CSS-->
-    <link rel="stylesheet" type="text/css" href="/public/css/screen.css" media="screen, projection" />
-	<!--syntax highlighting CSS-->
-	{{append . "moreStyles" "css/syntax.css"}}
-	<!--google prettyprint-->
-	{{append . "moreStyles" "css/prettify.css"}}
-	{{append . "moreScripts" "js/prettify.js"}}
-	{{append . "moreScripts" "js/lang-go.js"}}
-	<!--jquery-->
-	{{append . "moreScripts" "js/jquery-1.5.2.min.js"}}
+	{{append . "moreStyles" "css/style.css"}}
 	<!--other-->
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.jpeg">
 
@@ -27,11 +19,17 @@
       <script src="/public/{{.}}" type="text/javascript" charset="utf-8"></script>
     {{end}}
   </head>
-  <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
-  <body onload="prettyPrint()">
-  <div class="site">
-  <div class="title">
-	<a href="/">Tw's blog</a>
-	<a class="extra" href="/">home</a>
-	<a class="extra" href="/rss">rss</a>
+  <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/public/images/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
+  <body>
+  <div id="topbar">
+	  <div class="container">
+		  <form method="GET" action="/search">
+			  <div id="menu">
+				  <a href="/">home</a>
+				  <a href="/rss">rss</a>
+				  <input type="text" id="search" name="q" class="inactive" value="Search" placeholder="Search">
+			  </div>
+			  <div id="heading"><a href="/">Tw's blog</a></div>
+		  </form>
+	  </div>
   </div>
