@@ -603,3 +603,39 @@ div#playground .output {
         display: none;
         visibility: hidden;
 }
+
+#sidebar {
+	float: right;
+	padding-left: 20px;
+	width: 250px;
+	background: white;
+}
+#sidebar p, #sidebar ul {
+	margin: 20px 5px;
+}
+#sidebar ul {
+	padding: 0;
+}
+#sidebar li {
+	list-style-type: none;
+}
+#content .author {
+	font-style: italic;
+}
+#content .article {
+	margin-bottom: 50px;
+}
+#content .date {
+	color: #999;
+}
+#content .tags {
+	color: #999;
+	font-size: smaller;
+}
+#content .iframe, #content .image {
+	margin: 20px;
+}
+#content .title {
+	margin: 20px 0;
+}
+
