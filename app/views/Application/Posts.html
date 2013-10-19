@@ -6,6 +6,10 @@
 <div class="article">
 	{{with .post}}
 		{{range .Content}}
+		<h1 class="title">
+			<a href="/posts/{{.Key}}">{{.Title}}</a>
+		</h1>
+		<p class="data">{{.Date | formatTime}}</p>
 		{{.Content}}
 		{{end}}
 	{{end}}
