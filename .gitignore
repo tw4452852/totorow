@@ -23,4 +23,6 @@ _testmain.go
 
 *.swp
 
+# revel generate files
 app/tmp
+app/routes/
