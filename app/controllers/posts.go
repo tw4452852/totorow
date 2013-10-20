@@ -12,15 +12,16 @@ import (
 
 func Init() {
 	storage.Init("src/totorow/conf/repos.xml")
-	revel.TemplateFuncs["formatTime"] = func(t time.Time) template.HTML {
-		return template.HTML(t.Format(storage.TimePattern))
-	}
 }
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	//register posts plugin
 	revel.OnAppStart(Init)
+
+	revel.TemplateFuncs["formatTime"] = func(t time.Time) template.HTML {
+		return template.HTML(t.Format(storage.TimePattern))
+	}
 }
 
 //GetFullList get entire posts list
