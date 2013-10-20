@@ -9,6 +9,10 @@
 
 	<!--Homepage CSS-->
 	{{append . "moreStyles" "css/style.css"}}
+	<!--golang js-->
+	{{append . "moreScripts" "js/jquery.js"}}
+	{{append . "moreScripts" "js/playground.js"}}
+	{{append . "moreScripts" "js/play.js"}}
 	<!--other-->
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.jpeg">
 
@@ -18,6 +22,35 @@
     {{range .moreScripts}}
       <script src="/public/{{.}}" type="text/javascript" charset="utf-8"></script>
     {{end}}
+	<script>
+	$(function() {
+		
+		$('.playground > pre.numbers, .code > pre.numbers').each(function() {
+			var $spans = $(this).find('> span');
+
+			
+			var max = 0;
+			$spans.each(function() {
+				var n = $(this).attr('num')*1;
+				if (n > max) max = n;
+			});
+			var width = 2;
+			while (max > 10) {
+				max = max / 10;
+				width++;
+			}
+
+			
+			$spans.each(function() {
+				var n = $(this).attr('num')+' ';
+				while (n.length < width) n = ' '+n;
+				$('<span class="number">').text(n).insertBefore(this);
+			});
+		});
+
+		initPlayground(new HTTPTransport());
+	});
+	</script>
   </head>
   <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/public/images/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
   <body>

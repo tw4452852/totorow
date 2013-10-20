@@ -6,6 +6,8 @@ GET     /                                       Application.Index
 GET		/posts/:key								Application.Posts
 GET     /images/:key/*path						Application.Static
 GET		/rss									Application.RSS
+POST	/compile								Application.Play
+POST	/share									Application.Play
 
 # Ignore favicon requests
 GET     /favicon.ico							Static.Serve("public/images","favicon.jpeg")

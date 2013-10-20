@@ -45,3 +45,7 @@ func (c Application) RSS() revel.Result {
 	}
 	return c.RenderXml(rss)
 }
+
+func (c Application) Play() revel.Result {
+	return PlayResult{}
+}
