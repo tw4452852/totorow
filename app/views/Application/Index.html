@@ -6,7 +6,11 @@
 	<h1 class="title">Article index</h1>
 	{{with .list}}
 		{{range .Content}}
-		<li><span>{{.Date | formatTime}}</span> &raquo; <a href="/posts/{{.Key}}">{{.Title}}</a></li>
+		<p class="blogtitle">
+		<a href="/posts/{{.Key}}">{{.Title}}</a>
+		<br>
+		<span class="date">{{.Date | formatTime}}</span>
+		</p>
 		{{end}}
 	{{end}}
 </div>
