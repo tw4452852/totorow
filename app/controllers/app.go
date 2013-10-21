@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/robfig/revel"
 )
 
@@ -46,6 +47,8 @@ func (c Application) RSS() revel.Result {
 	return c.RenderXml(rss)
 }
 
+// A dump Controller.Action
+// just for the play filter's recognization
 func (c Application) Play() revel.Result {
-	return PlayResult{}
+	return c.RenderError(errors.New("not reachable!!"))
 }

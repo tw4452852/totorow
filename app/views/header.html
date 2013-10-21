@@ -13,6 +13,7 @@
 	{{append . "moreScripts" "js/jquery.js"}}
 	{{append . "moreScripts" "js/playground.js"}}
 	{{append . "moreScripts" "js/play.js"}}
+	{{append . "moreScripts" "js/godocs.js"}}
 	<!--other-->
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.jpeg">
 
@@ -51,6 +52,7 @@
 		initPlayground(new HTTPTransport());
 	});
 	</script>
+	<script type="text/javascript">window.initFuncs = [];</script>
   </head>
   <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/public/images/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
   <body>

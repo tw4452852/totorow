@@ -8,6 +8,15 @@ import (
 
 const baseURL = "http://play.golang.org"
 
+func init() {
+	playFilter := func(c *revel.Controller, fc []revel.Filter) {
+		c.Result = PlayResult{}
+		return
+	}
+	revel.FilterAction(Application.Play).
+		Insert(playFilter, revel.BEFORE, revel.ParamsFilter)
+}
+
 type PlayResult struct{}
 
 func (PlayResult) Apply(req *revel.Request, resp *revel.Response) {
