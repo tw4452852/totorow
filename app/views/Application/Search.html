@@ -1,0 +1,20 @@
+{{set . "title" "Tw's blog"}}
+{{template "header.html" .}}
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+<div id="content">
+	<h1 class="title">Search result</h1>
+	{{with .list}}
+		{{range .Content}}
+		<p class="blogtitle">
+		<a href="/posts/{{.Key}}">{{.Title}}</a>
+		<br>
+		<span class="date">{{.Date | formatTime}}</span>
+		</p>
+		{{end}}
+	{{end}}
+</div>
+</div>
+</div>
+
+{{template "footer.html" .}}

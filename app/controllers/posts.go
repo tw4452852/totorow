@@ -1,28 +1,10 @@
 package controllers
 
 import (
-	"github.com/robfig/revel"
 	"github.com/tw4452852/storage"
-	"html/template"
 	"io"
-	"runtime"
 	"sort"
-	"time"
 )
-
-func Init() {
-	storage.Init("src/totorow/conf/repos.xml")
-}
-
-func init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	//register posts plugin
-	revel.OnAppStart(Init)
-
-	revel.TemplateFuncs["formatTime"] = func(t time.Time) template.HTML {
-		return template.HTML(t.Format(storage.TimePattern))
-	}
-}
 
 //GetFullList get entire posts list
 func GetFullList() (*storage.Result, error) { /*{{{*/

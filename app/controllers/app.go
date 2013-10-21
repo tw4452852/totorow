@@ -52,3 +52,16 @@ func (c Application) RSS() revel.Result {
 func (c Application) Play() revel.Result {
 	return c.RenderError(errors.New("not reachable!!"))
 }
+
+func (c Application) Search() revel.Result {
+	search := c.Params.Get("q")
+	if search == "" {
+		return c.Redirect("/")
+	}
+	p, err := GetFullList()
+	if err != nil {
+		return c.RenderError(err)
+	}
+	c.RenderArgs["list"] = Filter(p, search)
+	return c.Render()
+}
