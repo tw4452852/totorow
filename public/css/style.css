@@ -14,10 +14,10 @@ pre {
 pre .comment {
 	color: #006600;
 }
-pre .highlight,
-pre .highlight-comment,
-pre .selection-highlight,
-pre .selection-highlight-comment {
+.highlight,
+.highlight-comment,
+.selection-highlight,
+.selection-highlight-comment {
 	background: #FFFF00;
 }
 pre .selection,
