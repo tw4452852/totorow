@@ -14,6 +14,7 @@ func (c Application) Index() revel.Result {
 	if err != nil {
 		return c.RenderError(err)
 	}
+	c.RenderArgs["tags"] = GetTags(l)
 	c.RenderArgs["list"] = l
 	return c.Render()
 }
@@ -62,6 +63,22 @@ func (c Application) Search() revel.Result {
 	if err != nil {
 		return c.RenderError(err)
 	}
-	c.RenderArgs["list"] = Filter(p, search)
+	c.RenderArgs["search"] = search
+	c.RenderArgs["tags"] = GetTags(p)
+	c.RenderArgs["list"] = Filter(p, CheckAll(search))
+	return c.Render()
+}
+
+func (c Application) Tag(tag string) revel.Result {
+	if tag == "" {
+		return c.Redirect("/")
+	}
+	p, err := GetFullList()
+	if err != nil {
+		return c.RenderError(err)
+	}
+	c.RenderArgs["tag"] = tag
+	c.RenderArgs["tags"] = GetTags(p)
+	c.RenderArgs["list"] = Filter(p, CheckTags(tag))
 	return c.Render()
 }

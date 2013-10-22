@@ -1,0 +1,3 @@
+{{$t := .tag}}
+{{set . "contentTitle" (printf "Result for tag %q" $t)}}
+{{template "list.html" .}}

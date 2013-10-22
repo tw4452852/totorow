@@ -7,6 +7,7 @@ GET		/posts/:key								Application.Posts
 GET     /images/:key/*path						Application.Static
 GET		/rss									Application.RSS
 GET		/search									Application.Search
+GET		/tags/:tag								Application.Tag
 POST	/compile								Application.Play
 POST	/share									Application.Play
 

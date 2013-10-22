@@ -8,11 +8,46 @@ import (
 	"sync"
 )
 
+type Checker func(post storage.Poster) bool
+
+func CheckAll(require string) Checker {
+	return func(p storage.Poster) bool {
+		if strings.Contains(string(p.Title()), require) {
+			return true
+		}
+		if tagsContain(p.Tags(), require) {
+			return true
+		}
+		if strings.Contains(string(p.Content()), require) {
+			return true
+		}
+		return false
+	}
+}
+
+func CheckTags(tag string) Checker {
+	return func(p storage.Poster) bool {
+		if tagsContain(p.Tags(), tag) {
+			return true
+		}
+		return false
+	}
+}
+
+func tagsContain(tags []string, require string) bool {
+	for _, tag := range tags {
+		if tag == require {
+			return true
+		}
+	}
+	return false
+}
+
 var workers = runtime.NumCPU()
 
 // Filter return the Posters than contain `require`
 // search sequence: title, tag, content
-func Filter(all *storage.Result, require string) *storage.Result {
+func Filter(all *storage.Result, chk Checker) *storage.Result {
 	if all == nil {
 		return nil
 	}
@@ -32,7 +67,7 @@ func Filter(all *storage.Result, require string) *storage.Result {
 		waiter.Add(1)
 		go func() {
 			defer waiter.Done()
-			work(in, out, require)
+			work(in, out, chk)
 		}()
 	}
 	// collect the result
@@ -47,17 +82,10 @@ func Filter(all *storage.Result, require string) *storage.Result {
 	return ret
 }
 
-func work(in <-chan storage.Poster, out chan<- storage.Poster, require string) {
+func work(in <-chan storage.Poster, out chan<- storage.Poster, chk Checker) {
 	for p := range in {
-		if strings.Contains(string(p.Title()), require) {
+		if chk(p) {
 			out <- p
-			continue
 		}
-		// TODO: tag
-		if strings.Contains(string(p.Content()), require) {
-			out <- p
-			continue
-		}
-
 	}
 }

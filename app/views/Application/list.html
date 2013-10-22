@@ -1,0 +1,43 @@
+{{define "list.html"}}
+{{set . "title" "Tw's blog"}}
+{{template "header.html" .}}
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+<div id="sidebar">
+	<h4>Tags</h4>
+	{{with .tags}}
+	<ul>
+		{{range .Content}}
+		<li><a href="/tags/{{.Name}}">{{.Name}} ({{.Count}})</a></li>
+		{{end}}
+	</ul>
+	{{end}}
+</div>
+<div id="content">
+	<h1 class="title">{{.contentTitle}}</h1>
+	{{$search := .search}}
+	{{with .list}}
+		{{range .Content}}
+		<p class="blogtitle">
+			{{if $search}}
+			<a href="/posts/{{.Key}}">{{.Title | highlight $search}}</a>
+			{{else}}
+			<a href="/posts/{{.Key}}">{{.Title}}</a>
+			{{end}}
+			<br>
+			<span class="date">{{.Date | formatTime}}</span>
+			<br>
+			{{if $search}}
+			<span class="tags">{{.Tags | join | highlight $search}}</span>
+			{{else}}
+			<span class="tags">{{.Tags | join}}</span>
+			{{end}}
+		</p>
+		{{end}}
+	{{end}}
+</div>
+</div>
+</div>
+
+{{template "footer.html" .}}
+{{end}}
