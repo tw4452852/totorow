@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>{{(index .post.Content 0).Title}}</title>
+    <meta charset='utf-8'>
+    <script src='/public/js/slide.js'></script>
+    <script src='/public/js/play.js'></script>
+  </head>
+
+  <body style='display: none'>
+	{{with .post}}
+		{{range .Content}}
+		{{.Content}}
+		{{end}}
+	{{end}}
+  </body>
+</html>

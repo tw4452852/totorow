@@ -28,6 +28,15 @@ func (c Application) Posts(key string) revel.Result {
 	return c.Render()
 }
 
+func (c Application) Slides(key string) revel.Result {
+	p, err := GetPost(key)
+	if err != nil {
+		return c.RenderError(err)
+	}
+	c.RenderArgs["post"] = p
+	return c.Render()
+}
+
 func (c Application) Static(key, path string) revel.Result {
 	reader, err := GetStaticReader(key, path)
 	if err != nil {

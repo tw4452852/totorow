@@ -4,6 +4,7 @@
 
 GET     /                                       Application.Index
 GET		/posts/:key								Application.Posts
+GET		/slides/:key							Application.Slides
 GET     /images/:key/*path						Application.Static
 GET		/rss									Application.RSS
 GET		/search									Application.Search

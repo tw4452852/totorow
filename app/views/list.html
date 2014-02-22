@@ -19,9 +19,9 @@
 		{{range .Content}}
 		<p class="blogtitle">
 			{{if $search}}
-			<a href="/posts/{{.Key}}">{{.Title | highlight $search}}</a>
+			<a href="/{{if .IsSlide}}slides{{else}}posts{{end}}/{{.Key}}">{{.Title | highlight $search}}</a>
 			{{else}}
-			<a href="/posts/{{.Key}}">{{.Title}}</a>
+			<a href="/{{if .IsSlide}}slides{{else}}posts{{end}}/{{.Key}}">{{.Title}}</a>
 			{{end}}
 			<br>
 			<span class="date">{{.Date | formatTime}}</span>
