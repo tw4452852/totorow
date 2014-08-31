@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"code.google.com/p/rsc/blog/atom"
+	"code.google.com/p/go.tools/blog/atom"
 	"errors"
 	"github.com/tw4452852/storage"
 	"sort"
