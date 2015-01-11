@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/robfig/revel"
+	"github.com/revel/revel"
 	"github.com/tw4452852/storage"
 	"html/template"
 	"runtime"
