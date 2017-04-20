@@ -1,0 +1,4 @@
+{{$search := .URL.Query.Get "q"}}
+{{$title := printf "Results for search %q" $search}}
+{{$posts := getFull | filterSearch $search}}
+{{.Include "/templates/list.html" (.Map "title" $title "posts" $posts "search" $search)}}

@@ -3,26 +3,20 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{{.title}}</title>
+	<title>{{index .Args 0}}</title>
 	<meta name="author" content="Tw" />
 	<meta charset="utf-8" />
 
-	<!--Homepage CSS-->
-	{{append . "moreStyles" "css/style.css"}}
-	<!--golang js-->
-	{{append . "moreScripts" "js/jquery.js"}}
-	{{append . "moreScripts" "js/playground.js"}}
-	{{append . "moreScripts" "js/play.js"}}
-	{{append . "moreScripts" "js/godocs.js"}}
-	<!--other-->
-    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.jpeg">
+	<!--icon-->
+    <link rel="icon" type="image/jpeg" href="/public/images/favicon.jpeg">
 
-    {{range .moreStyles}}
-      <link rel="stylesheet" type="text/css" href="/public/{{.}}" />
-    {{end}}
-    {{range .moreScripts}}
-      <script src="/public/{{.}}" type="text/javascript" charset="utf-8"></script>
-    {{end}}
+	<link rel="stylesheet" type="text/css" href="/public/css/style.css" />
+
+	<script src="/public/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/public/js/playground.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/public/js/play.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/public/js/godocs.js" type="text/javascript" charset="utf-8"></script>
+
 	<script>
 	$(function() {
 		

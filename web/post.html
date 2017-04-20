@@ -1,0 +1,29 @@
+{{$key := .URL.Query.Get "q"}}
+{{$ctx := .}}
+
+{{with getOne $key}}
+
+{{$ctx.Include "/templates/header.html" .Title}}
+
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+
+<div id="content">
+<div class="article">
+	<h1 class="title">
+		<a href="{{$ctx.URL.String}}">{{.Title}}</a>
+	</h1>
+	<p class="date">{{.Date.Format "2006-01-02"}}</p>
+	{{.Content}}
+</div>
+</div>
+
+{{$ctx.Include "/templates/disqus.html"}}
+
+</div>
+</div>
+
+{{$ctx.Include "/templates/footer.html"}}
+{{else}}
+<body>can't find post for {{$key}}</body>
+{{end}}

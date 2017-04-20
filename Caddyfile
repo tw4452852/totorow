@@ -1,0 +1,8 @@
+localhost:7777
+root web
+templates / .html .xml
+ext .html .xml
+gzip
+log stdout
+errors visible
+totorow ./repos.xml

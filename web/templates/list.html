@@ -1,0 +1,36 @@
+{{$map := index .Args 0}}
+{{$title := $map.title}}
+{{$posts := $map.posts}}
+{{$search := $map.search}}
+
+{{.Include "/templates/header.html" "Tw's blog"}}
+
+<div id="page" tabindex="-1" style="outline: 0px;">
+<div class="container">
+
+<div id="sidebar">
+	<h4>Tags</h4>
+	<ul>
+		{{range getTags $posts}}
+		<li><a href="/tag?q={{.Name}}">{{.Name}} ({{.Count}})</a></li>
+		{{end}}
+	</ul>
+</div>
+
+<div id="content">
+	<h1 class="title">{{$title}}</h1>
+	{{range $posts}}
+	<p class="blogtitle">
+	<a href="/{{if .IsSlide}}slide{{else}}post{{end}}?q={{.Key}}">{{highlight $search .Title}}</a>
+	<br>
+	<span class="date">{{.Date.Format "2006-01-02"}}</span>
+	<br>
+	<span class="tags">{{range .Tags}}{{highlight $search .}} {{end}}</span>
+	</p>
+	{{end}}
+</div>
+
+</div>
+</div>
+
+{{.Include "/templates/footer.html"}}

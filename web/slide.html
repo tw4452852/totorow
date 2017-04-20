@@ -1,0 +1,17 @@
+{{$key := .URL.Query.Get "q"}}
+<html>
+	{{with getOne $key}}
+	<head>
+		<title>{{.Title}}</title>
+		<meta charset='utf-8'>
+		<script src='/public/js/slide.js'></script>
+		<script src='/public/js/play.js'></script>
+	</head>
+
+	<body style='display: none'>
+		{{.Content}}
+	</body>
+	{{else}}
+	<body>can't find slide for {{$key}}</body>
+	{{end}}
+</html>
