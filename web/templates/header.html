@@ -11,11 +11,16 @@
     <link rel="icon" type="image/jpeg" href="/public/images/favicon.jpeg">
 
 	<link rel="stylesheet" type="text/css" href="/public/css/style.css" />
-
 	<script src="/public/js/jquery.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/public/js/playground.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/public/js/play.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/public/js/godocs.js" type="text/javascript" charset="utf-8"></script>
+
+	{{.AddLink "/public/css/style.css"}}
+	{{.AddLink "/public/js/jquery.js"}}
+	{{.AddLink "/public/js/playground.js"}}
+	{{.AddLink "/public/js/play.js"}}
+	{{.AddLink "/public/js/godocs.js"}}
 
 	<script>
 	$(function() {
@@ -49,6 +54,7 @@
 	<script type="text/javascript">window.initFuncs = [];</script>
   </head>
   <a href="http://github.com/tw4452852"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/public/images/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
+  {{.AddLink "/public/images/forkme_right_red_aa0000.png"}}
   <body>
   <div id="topbar">
 	  <div class="container">

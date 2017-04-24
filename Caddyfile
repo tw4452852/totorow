@@ -6,3 +6,4 @@ gzip
 log stdout
 errors visible
 totorow ./repos.xml
+push

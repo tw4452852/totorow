@@ -1,15 +1,21 @@
+{{$ctx := .}}
 {{$key := .URL.Query.Get "q"}}
 <html>
 	{{with getOne $key}}
 	<head>
 		<title>{{.Title}}</title>
 		<meta charset='utf-8'>
-		<script src='/public/js/slide.js'></script>
-		<script src='/public/js/play.js'></script>
+		<script src="/public/js/slide.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/public/js/play.js" type="text/javascript" charset="utf-8"></script>
+
+		{{$ctx.AddLink "/public/js/slide.js"}}
+		{{$ctx.AddLink "/public/js/play.js"}}
 	</head>
 
 	<body style='display: none'>
 		{{.Content}}
+		{{/* add static files for push */}}
+		{{range .StaticList}} {{$ctx.AddLink .}} {{end}}
 	</body>
 	{{else}}
 	<body>can't find slide for {{$key}}</body>
