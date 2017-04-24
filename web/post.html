@@ -11,7 +11,7 @@
 <div id="content">
 <div class="article">
 	<h1 class="title">
-		<a href="{{$ctx.URL.String}}">{{.Title}}</a>
+		<a href="{{$ctx.URI}}">{{.Title}}</a>
 	</h1>
 	<p class="date">{{.Date.Format "2006-01-02"}}</p>
 	{{.Content}}
