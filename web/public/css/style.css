@@ -267,7 +267,7 @@ div#about {
 	height: 96px;
 }
 div#gopher {
-	background: url(/doc/gopher/frontpage.png) no-repeat;
+	background: url(/public/images/gopher/frontpage.png) no-repeat;
 	background-position: center top;
 	height: 155px;
 }
@@ -299,7 +299,7 @@ div#learn .popout {
 	display: block;
 	cursor: pointer;
 	font-size: 12px;
-	background: url(/doc/share.png) no-repeat;
+	background: url(/public/images/share.png) no-repeat;
 	background-position: right top;
 	padding: 5px 27px;
 }
