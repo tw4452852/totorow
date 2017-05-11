@@ -5,6 +5,7 @@ http://totorow.xyz {
       / https://totorow.xyz{uri}
   }
   status 204 /generate_204
+  log / stdout "{host}: {common}"
 }
 
 https://totorow.xyz {
@@ -12,7 +13,7 @@ https://totorow.xyz {
   templates / .html .xml
   ext .html .xml
   gzip
-  log stdout
+  log / stdout "{host}: {common}"
   errors visible
   totorow ./repos.xml
   push
