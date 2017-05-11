@@ -1,11 +1,23 @@
-totorow.xyz
-root web
-templates / .html .xml
-ext .html .xml
-gzip
-log stdout
-errors visible
-totorow ./repos.xml
-push
-internal /templates
-tls tw84452852@hotmail.com
+http://totorow.xyz {
+  # upgrade all requests (except /generate_204) to https
+  redir {
+    if {path} not /generate_204
+      / https://totorow.xyz{uri}
+  }
+  status 204 /generate_204
+}
+
+https://totorow.xyz {
+  root web
+  templates / .html .xml
+  ext .html .xml
+  gzip
+  log stdout
+  errors visible
+  totorow ./repos.xml
+  push
+  internal /templates
+  tls tw84452852@hotmail.com
+}
+
+# vim: set ft=sh et ts=2 sw=2:
