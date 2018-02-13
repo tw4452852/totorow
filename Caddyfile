@@ -19,6 +19,7 @@ https://totorow.xyz {
   push
   internal /templates
   tls tw84452852@hotmail.com
+  status 204 /generate_204
 }
 
 # vim: set ft=sh et ts=2 sw=2:
