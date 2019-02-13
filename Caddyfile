@@ -15,7 +15,7 @@ https://totorow.xyz {
   gzip
   log / stdout "{host}: {common}"
   errors visible
-  totorow ./repos.xml
+  totorow ./repos.json
   push
   internal /templates
   tls tw84452852@hotmail.com
